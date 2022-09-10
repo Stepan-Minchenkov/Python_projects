@@ -26,6 +26,7 @@ class BMI(object):
         self._input_height = 1
         self._bmi = 0
         self._collect_user_input()
+        self._calculate_bmi()
         super().__init__()
 
     def _collect_user_input(self):
@@ -65,7 +66,6 @@ class BMI(object):
 
     @property
     def bmi(self):
-        self._calculate_bmi()
         return self._bmi
 
     def wiki_bmi(self):
@@ -93,7 +93,7 @@ class BMI(object):
         print("\n line below is based on bmi calculator and its limits:")
         for _ in self._BMI_range.keys():
             print(f"\t{_:18s}{self._BMI_range.get(_)}")
-        print(" ")
+        print()
 
         self._print_bmi_graph(self._max_bmi_calc, self._min_bmi_calc)
 
