@@ -146,6 +146,18 @@ def _calculate_bmi(_mass, _height):
     return _mass / (_height * _height)
 
 
+def time_to_end():
+    return "time to end"
+
+
+options = {'A': list_users,
+           'B': user_detail,
+           'C': update_user,
+           'D': delete_user,
+           'E': add_user,
+           'F': time_to_end}
+
+
 def main():
     while 1:
         try:
@@ -153,22 +165,10 @@ def main():
             for _ in options_text.keys():
                 print(f"\t{_}: {options_text.get(_)}")
             print()
-            input_selection = input("Choose the option: ")
-            input_selection = input_selection.upper()
-            if input_selection == 'A':
-                list_users()
-            elif input_selection == 'B':
-                user_detail()
-            elif input_selection == 'C':
-                update_user()
-            elif input_selection == 'D':
-                delete_user()
-            elif input_selection == 'E':
-                add_user()
-            elif input_selection == 'F':
+            input_selection = (input("Choose the option: ")).upper()
+            result = options.get(input_selection, lambda: print("Incorrect option selected"))()
+            if result == "time to end":
                 return
-            else:
-                print("incorrect option selected")
         except:
             break
 
