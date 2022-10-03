@@ -218,9 +218,9 @@ def print_all():
 
 
 def main():
-    # for debug purposes -- autofill of your ships
-    temp_list = ['A1A2A3A4', 'C1C2C3', 'E1E2E3', 'G1G2', 'K1K2', 'A6A7', 'C6', 'G6', 'K6', 'K10']
-    your_ships = set_ships(your_field, your_ships_list, test=1, test_data=temp_list)
+    # # for debug purposes -- autofill of your ships
+    # temp_list = ['A1A2A3A4', 'C1C2C3', 'E1E2E3', 'G1G2', 'K1K2', 'A6A7', 'C6', 'G6', 'K6', 'K10']
+    # your_ships = set_ships(your_field, your_ships_list, test=1, test_data=temp_list)
     your_ships = set_ships(your_field, your_ships_list)
     print("Waiting for the start..")
 
