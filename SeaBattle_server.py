@@ -1,7 +1,10 @@
 import socket
 import select
 import time
-
+"""
+Server accepts only 2 connections, and rejects any others.
+If any of those 2 connections is closed or one of the clients wins -- server closes the other and closes itself.
+"""
 
 def listening_socket():
     sock1 = socket.socket()

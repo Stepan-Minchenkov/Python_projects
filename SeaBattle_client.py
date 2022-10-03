@@ -34,6 +34,22 @@ enemy_ships_list = {1: 4, 2: 3, 3: 2, 4: 1}
 
 
 def print_field(field):
+    """
+    To print one game field 10x10 based on filled dictionary, where:
+    0 = empty field             - print blank
+    1 = your ship               - print #
+    2 = missed shot             - print *
+    3 = enemy's ship            - print blank (can be turned to $ for debugging)
+    4 = zone around sunk ship   - print +
+    5 = zone around your ship   - print blank (can be turned to ? for debugging)
+    6 = hit ship                - print X
+
+    A, B, C.. lists represent columns.
+    Printing is done by forming rows from columns (A1+B1+C1+..., A2+B2+C2+..)
+
+    Input: the dict 10x10 with all filled positions
+    Output: None
+    """
     out_list = []
     for _ in range(22):
         out_list.append('')
@@ -76,6 +92,27 @@ def print_field(field):
 
 
 def set_ships(field, ships_list, marker='My', **kwargs):
+    """
+    Function to take coordinates of all your ships.
+    Ships should be set one by one with their coordinates in format A1A2A3A4.
+    The coordinates are checked to be in valid range A-K, 1-10 and that the number of ships is right
+    (1 - 4cells', 2 - 3cells', 3 - 2cells', 4 - 1cells')
+    If coordinate's range is set incorrectly -- exception is generated and program stopped.
+    Function has hidden parameters 'test', 'test_data' and extra parameter 'marker'.
+    If 'test' is passed -- program expects 'test_data' list with all pre-defined ships' positions
+    If 'marker' is set to 'Enemy' -- program is setting enemy's ships
+        (useful for debugging/developing, as in such case server and other client are not needed)
+
+    Input:  the dict 10x10 to be filled with all positions
+            the list of allowed ships' sizes to be set
+            the marker ("My" or "Enemy") to set whose fields to fill (Optional)
+            'test' keyword = 1, if test data should be accepted (Optional)
+            'test_data' list with the ships' coordinates to be set automatically (Optional and only if 'test'=1)
+    Output: the list with the coordinates of set ships
+            dict 10x10 with all positions (not directly returned but updated as input mutable dict)
+
+    Note: Current version does not check whether ships are set correctly (without missed cells or diagonally)
+    """
     if kwargs.get('test') == 1:
         test_mode = 1
     else:
@@ -166,6 +203,9 @@ def set_ships(field, ships_list, marker='My', **kwargs):
 
 
 def print_all():
+    """
+    print of both your and enemy's 10x10 fields
+    """
     if os.name == 'nt':
         os.system('cls')
     else:
@@ -178,17 +218,19 @@ def print_all():
 
 
 def main():
-    # temp_list = ['A1A2A3A4', 'C1C2C3', 'E1E2E3', 'G1G2', 'K1K2', 'A6A7', 'C6', 'G6', 'K6', 'K10']
-    # your_ships = set_ships(your_field, your_ships_list, test=1, test_data=temp_list)
+    # for debug purposes -- autofill of your ships
+    temp_list = ['A1A2A3A4', 'C1C2C3', 'E1E2E3', 'G1G2', 'K1K2', 'A6A7', 'C6', 'G6', 'K6', 'K10']
+    your_ships = set_ships(your_field, your_ships_list, test=1, test_data=temp_list)
     your_ships = set_ships(your_field, your_ships_list)
     print("Waiting for the start..")
 
-# temporary filling
+# for debug purposes -- autofill of enemy's ships
 #     enemy = ['A1A2A3A4', 'C1C2C3', 'E1E2E3', 'G1G2', 'K1K2', 'A6A7', 'C6', 'G6', 'K6', 'K10']
 #     enemy_ships = set_ships(enemy_field, enemy_ships_list, 'Enemy', test=1, test_data=enemy)
 #     print_field(enemy_field)
 #     print(enemy_ships)
 
+    # with socket.socket() as sock:
     sock = socket.socket()
     sock.connect(('127.0.0.1', 65432))
     sock.send(str.encode(json.dumps(your_ships)))
@@ -199,7 +241,8 @@ def main():
             number = cell[1:]
             enemy_field[letter][int(number) - 1] = "3"
 
-    # temporary data
+    # # for debug purposes -- set the list of  checked ships
+    # # temporary data
     # enemy_ships = [{'K10': 1}]
     # your_ships = [{'K10': 1}]
 
@@ -216,6 +259,9 @@ def main():
 
 
 def shoot(yours_field, yours_ships, enemys_field, enemys_ships, curr_socket):
+    """
+    the process of shooting until either your or enemy's list of ships is empty
+    """
     while yours_ships != [] and enemys_ships != []:
         time.sleep(2)
         print_all()
@@ -293,6 +339,10 @@ def shoot(yours_field, yours_ships, enemys_field, enemys_ships, curr_socket):
 
 
 def borders(ships):
+    """
+    Function to find cells around the ship to know
+    where the shooting or setting another ship is impossible
+    """
     ship = list(ships)
     temp_result = right_border(ship)
     temp_result += left_border(ship)
@@ -304,6 +354,9 @@ def borders(ships):
 
 
 def right_border(ships):
+    """
+    finding right border
+    """
     result = []
     allowed_letters = "ABCDEFGHI"
     replace_letters = "BCDEFGHIK"
@@ -315,6 +368,9 @@ def right_border(ships):
 
 
 def left_border(ships):
+    """
+    finding left border
+    """
     result = []
     allowed_letters = "BCDEFGHIK"
     replace_letters = "ABCDEFGHI"
@@ -326,6 +382,9 @@ def left_border(ships):
 
 
 def down_border(ships):
+    """
+    finding down border
+    """
     result = []
     for item in list(ships):
         if int(item[1:]) < 10:
@@ -334,6 +393,9 @@ def down_border(ships):
 
 
 def up_border(ships):
+    """
+    finding up border
+    """
     result = []
     for item in list(ships):
         if int(item[1:]) > 1:
