@@ -370,7 +370,7 @@ options = {'A': bmi_test.list_users,
            'F': bmi_test.time_to_end}
 
 
-def main():
+def main_bmi():
     while 1:
         try:
             print()
@@ -386,7 +386,8 @@ def main():
 
 
 # call of the function:
-main()
+if __name__ == '__main__':
+    main_bmi()
 
 # print("Ваш индекс массы тела: {:.1f}".format(bmi_test.bmi()))
 # bmi_test.wiki_bmi()
