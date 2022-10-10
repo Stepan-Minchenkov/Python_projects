@@ -16,8 +16,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from Bookstore.hello_world import hello_world
-from Bookstore.first import first
+from bookstore_first.hello_world import hello_world
+from bookstore_first.first import first
 
 urlpatterns = [
     path('admin/', admin.site.urls),
