@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All authors</title>
+</head>
+<body>
+    <h1> All authors in database </h1>
+    <table border="1">
+{% for author in obj_list %}
+        <tr>
+            <td><a href="/ref-author-update/{{ author.pk }}">{{ author.pk }} </a></td>
+            <td> {{ author.name }} </td>
+            <td> {{ author.surname }} </td>
+            <td> {{ author.description }} </td>
+             <td><a href="/ref-author-delete/{{ author.pk }}">DELETE</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
