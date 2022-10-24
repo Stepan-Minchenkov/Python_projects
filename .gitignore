@@ -240,5 +240,5 @@ fabric.properties
 
 #######################################
 # my ignores:
-src/proj/LocalSettings.py
+src/**/LocalSettings.py
 main.py
