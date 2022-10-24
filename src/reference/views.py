@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.http import HttpResponse
 from django.views import generic
 from django.urls import reverse_lazy
@@ -6,8 +7,9 @@ from . import models, forms
 
 # Create your views here.
 def first(request):
-    return HttpResponse(f"This is the default page. Try /admin, /ref/author, "
-                        f"/ref/author-create, /ref/author-update, etc. for other options.")
+    return render(request, template_name='reference/main_page.html', context={})
+    # return HttpResponse(f"This is the default page. Try /admin, /ref/author, "
+    #                     f"/ref/author-create, /ref/author-update, etc. for other options.")
 
 
 # CRUDl Authors:
