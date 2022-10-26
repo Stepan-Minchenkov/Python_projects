@@ -1,0 +1,12 @@
+
+
+/* Navbar is fixed to the top */
+body {
+  min-height: 75rem;
+  padding-top: 4.5rem;
+}
+
+/* Sticky-footer */
+main > .container {
+  padding: 60px 15px 0;
+}

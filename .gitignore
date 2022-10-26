@@ -241,4 +241,5 @@ fabric.properties
 #######################################
 # my ignores:
 src/**/LocalSettings.py
+**/media/
 main.py

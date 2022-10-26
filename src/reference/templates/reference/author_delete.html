@@ -1,12 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delete author</title>
-</head>
-<body>
+{% extends "base_conf.html" %}
+{% block title %}
+Delete author
+{% endblock title %}
+
+{% block body %}
     <h1> Delete existed author from database </h1>
     <form action="" method="post">
         {% csrf_token %}
@@ -14,7 +11,6 @@
          Surname:     {{ object.surname }}<br>
          Description: {{ object.description }}
         </h3>
-        <input type="submit" value="Confirm">
+        <input type="submit" class="btn btn-success" value="Confirm">
     </form>
-</body>
-</html>
+{% endblock body %}
