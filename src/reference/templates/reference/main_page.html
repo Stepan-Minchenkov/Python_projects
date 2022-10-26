@@ -1,30 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All options</title>
-</head>
-<body>
+{% extends "base_conf.html" %}
+{% block title %}
+All options
+{% endblock title %}
+
+{% block body %}
     <h1> All available options </h1>
     {% csrf_token %}
-    <table border="1">
-        <tr>
-            <td><a href="admin/">Admin </a></td>
-        </tr>
-        <tr>
-            <td><a href="{% url 'reference:author-show' %}">Authors</a></td>
-        </tr>
-        <tr>
-            <td><a href="{% url 'reference:series-show' %}">Series</a></td>
-        </tr>
-        <tr>
-            <td><a href="{% url 'reference:genre-show' %}">Genres</a></td>
-        </tr>
-        <tr>
-            <td><a href="{% url 'reference:publish-show' %}">Publishers</a></td>
-        </tr>
-    </table><br>
-</body>
-</html>
+    <a href="admin/" class="btn btn-info">Admin </a>
+    <a href="{% url 'reference:author-show' %}" class="btn btn-info">Authors</a>
+    <a href="{% url 'reference:series-show' %}" class="btn btn-info">Series</a>
+    <a href="{% url 'reference:genre-show' %}" class="btn btn-info">Genres</a>
+    <a href="{% url 'reference:publish-show' %}" class="btn btn-info">Publishers</a>
+
+{% endblock body %}

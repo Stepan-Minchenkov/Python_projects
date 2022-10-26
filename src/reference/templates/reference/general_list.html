@@ -1,0 +1,28 @@
+{% extends "base_conf.html" %}
+{% block title %}
+All {{ ref_type }}
+{% endblock title %}
+
+{% block body %}
+    <h1> All {{ ref_type }} in database </h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-auto">
+                <table border="1" class="table table-bordered table-striped-columns">
+                    {% for element in object_list %}
+                    <tr>
+                        <td><a href="{% url ref_url_update pk=element.pk %}"
+                               class="btn btn-info">Update record {{ element.pk }} </a></td>
+                        <td> {{ element.name }} </td>
+                        <td> {{ element.description| default_if_none:'' }} </td>
+                         <td><a href="{% url ref_url_delete pk=element.pk %}"
+                                class="btn btn-danger">DELETE</a></td>
+                    </tr>
+                    {% endfor %}
+                </table><br>
+            </div>
+        </div>
+    </div>
+    <a href="{% url ref_url_create %}"
+       class="btn btn-primary">Add {{ ref_type }} to the list</a>
+{% endblock body %}

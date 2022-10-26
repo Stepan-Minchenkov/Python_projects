@@ -59,11 +59,14 @@ class DeleteAuthor(generic.DeleteView):
 class ShowSerie(generic.ListView):
     #   http://127.0.0.1:8000/ref/series
     model = models.Serie
-    template_name = 'reference/series_list.html'
+    template_name = 'reference/general_list.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['ref_type'] = 'series'
+        context['ref_url_update'] = 'reference:series-update'
+        context['ref_url_delete'] = 'reference:series-delete'
+        context['ref_url_create'] = 'reference:series-create'
         return context
 
 
@@ -126,11 +129,14 @@ class DeleteSerie(generic.DeleteView):
 class ShowGenre(generic.ListView):
     #   http://127.0.0.1:8000/ref/genre
     model = models.Genre
-    template_name = 'reference/genre_list.html'
+    template_name = 'reference/general_list.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['ref_type'] = 'genre'
+        context['ref_url_update'] = 'reference:genre-update'
+        context['ref_url_delete'] = 'reference:genre-delete'
+        context['ref_url_create'] = 'reference:genre-create'
         return context
 
 
@@ -194,11 +200,14 @@ class DeleteGenre(generic.DeleteView):
 class ShowPublisher(generic.ListView):
     #   http://127.0.0.1:8000/ref/publish
     model = models.Publisher
-    template_name = 'reference/publish_list.html'
+    template_name = 'reference/general_list.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
         context['ref_type'] = 'publisher'
+        context['ref_url_update'] = 'reference:publish-update'
+        context['ref_url_delete'] = 'reference:publish-delete'
+        context['ref_url_create'] = 'reference:publish-create'
         return context
 
 
