@@ -1,4 +1,5 @@
 {% extends "base_conf.html" %}
+{% load crispy_forms_tags %}
 {% block title %}
 Add {{ ref_type }}
 {% endblock title %}
@@ -7,7 +8,7 @@ Add {{ ref_type }}
     <h1> Add {{ ref_type }} into database </h1>
     <form action="" method="post">
         {% csrf_token %}
-        {{ form.as_div }}
+        {{ form|crispy }}
         <input type="submit" class="btn btn-success" value="Submit">
     </form>
 {% endblock body %}
