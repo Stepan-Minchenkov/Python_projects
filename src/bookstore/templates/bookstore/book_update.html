@@ -1,0 +1,16 @@
+{% extends "base_conf.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% block title %}
+{% trans "Update " %}{{ ref_type }}
+{% endblock title %}
+
+{% block body %}
+    <h1> {% trans "Update existed " %}{{ ref_type }}{% trans " with id = " %}{{ object.pk }}
+         {% trans " in database " %}</h1>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" class="btn btn-success" value="{% trans 'Submit' %}">
+    </form>
+{% endblock body %}

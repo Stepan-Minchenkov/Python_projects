@@ -1,13 +1,14 @@
 {% extends "base_conf.html" %}
+{% load i18n %}
 {% block title %}
-Display {{ ref_type }}
+{% trans "Display " %}{{ ref_type }}
 {% endblock title %}
 
 {% block body %}
-    <h1> Information for {{ ref_type }} '{{ object.name }}' with id = {{ object.pk }} </h1>
+    <h1> {% trans "Information for " %}{{ ref_type }} '{{ object.name }}{% trans "' with id = " %}{{ object.pk }} </h1>
     {% csrf_token %}
     <h3> {{ ref_type_up }}: {{ object.name }}<br>
-         Description: {{object.description }}
+         {% trans "Description" %}: {{object.description }}
     </h3>
-    <a href="{% url ref_url %}" class="btn btn-secondary">Back to the list of {{ ref_type }}</a>
+    <a href="{% url ref_url %}" class="btn btn-secondary">{% trans "Back to the list of " %}{{ ref_type }}</a>
 {% endblock body %}

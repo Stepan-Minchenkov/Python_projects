@@ -1,0 +1,45 @@
+{% extends "base_conf.html" %}
+{% load i18n %}
+{% block title %}
+{% trans "All " %}{{ ref_type }}
+{% endblock title %}
+
+{% block body %}
+    <h1> {% trans "All " %}{{ ref_type }}{% trans " in database" %} </h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-auto">
+                <table border="1" class="table table-bordered table-striped-columns">
+                    <thead>
+                    <tr>
+                        <th>  </th>
+                        <th> {% trans "Cover" %} </th>
+                        <th> {% trans "Name" %} </th>
+                        <th>  </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for element in object_list %}
+                    <tr>
+                        <td><a href="{% url ref_url_update pk=element.pk %}"
+                               class="btn btn-info">{% trans "Update record " %}{{ element.pk }} </a></td>
+                        <td>
+                        {% if element.photo %}
+                            <img src="{{ element.photo.url }}" class="card-img-top" alt="..."  width="10" height="50">
+                        {% else %}
+                            <img src="" class="card-img-top" alt="..."  width="10" height="50">
+                        {% endif%}
+                        </td>
+                        <td> {{ element.name }} </td>
+                        <td><a href="{% url ref_url_delete pk=element.pk %}"
+                                class="btn btn-danger">{% trans "DELETE" %}</a></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table><br>
+            </div>
+        </div>
+    </div>
+    <a href="{% url ref_url_create %}"
+       class="btn btn-primary">{% trans "Add " %}{{ ref_type }}{% trans " to the list" %}</a>
+{% endblock body %}

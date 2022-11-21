@@ -1,0 +1,51 @@
+{% extends "base_conf.html" %}
+{% load i18n %}
+{% block title %}
+{% trans "Display " %}{{ ref_type }}
+{% endblock title %}
+
+{% block body %}
+<style>
+    td {
+        border: 10px solid transparent;
+        border-collapse: collapse;
+        }
+</style>
+<h1> {% trans "Information for " %}{{ ref_type }} '{{ object.name }}' </h1>
+    {% csrf_token %}
+    <div class="col-md-auto">
+        <table border="1" class="table table-bordered table-striped-columns">
+            <tbody>
+            <tr>
+                <td width="30%">
+                    {% if object.photo %}
+                    <img src="{{ object.photo.url }}" class="card-img-top" alt="..."  width="60" height="500">
+                    {% else %}
+                    <img src="" class="card-img-top" alt="..."  width="60" height="500">
+                    {% endif%}
+                </td>
+                <td>
+                    <table>
+                        <tr><td>{% trans "Book" %}:</td>  <td>{{ object.name }}</td></tr>
+                        <tr><td>{% trans "Price" %}:</td>  <td>{{ object.price }}</td></tr>
+                        <tr><td>{% trans "Author" %}:</td>  <td>{{ object.authors }}</td></tr>
+                        <tr><td>{% trans "Series" %}:</td>  <td>{{ object.series }}</td></tr>
+                        <tr><td>{% trans "Genre" %}:</td>  <td>{{ object.genre }}</td></tr>
+                        <tr><td>{% trans "Publisher" %}:</td>  <td>{{ object.publisher }}</td></tr>
+                        <tr><td>{% trans "Year of publishing" %}:</td>  <td>{{ object.publish_year }}</td></tr>
+                        <tr><td>{% trans "Number of pages" %}:</td>  <td>{{ object.number_of_pages }}</td></tr>
+                        <tr><td>{% trans "Cover" %}:</td>  <td>{{ object.cover }}</td></tr>
+                        <tr><td>{% trans "Age" %}:</td>  <td>+{{ object.allowed_age }}</td></tr>
+                        <tr><td>{% trans "Format" %}:</td>  <td>{{ object.book_format }}</td></tr>
+                        <tr><td>{% trans "Weight" %}:</td>  <td>{{ object.weight }}</td></tr>
+                        <tr><td>{% trans "ISBN" %}:</td>  <td>{{ object.ISBN }}</td></tr>
+                        <tr><td>{% trans "On stock" %}:</td>  <td>{{ object.available }} books</td></tr>
+                        <tr><td>{% trans "Rate" %}:</td>  <td>{{ object.rate }}</td></tr>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+        </table><br>
+    </div>
+    <a href="{% url ref_url %}" class="btn btn-secondary">{% trans "Back to the list of " %}{{ ref_type }}</a>
+{% endblock body %}

@@ -2,16 +2,12 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views import generic
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from bookstore.models import Book
 from . import models, forms
 
 
 # Create your views here.
-def first(request):
-    return render(request, template_name='reference/main_page.html', context={})
-    # return HttpResponse(f"This is the default page. Try /admin, /ref/author, "
-    #                     f"/ref/author-create, /ref/author-update, etc. for other options.")
-
-
 # CRUDl Authors:
 class ShowAuthors(generic.ListView):
     #   http://127.0.0.1:8000/ref/author
@@ -19,8 +15,9 @@ class ShowAuthors(generic.ListView):
     template_name = 'reference/author_list.html'
 
 
-class CreateAuthor(generic.CreateView):
+class CreateAuthor(PermissionRequiredMixin, generic.CreateView):
     #   http://127.0.0.1:8000/ref/author-create
+    permission_required = 'reference.create_author'
     model = models.Author
     form_class = forms.AuthorForm
     template_name = 'reference/author_create.html'
@@ -36,8 +33,9 @@ class ReadAuthor(generic.DetailView):
     template_name = 'reference/author_read.html'
 
 
-class UpdateAuthor(generic.UpdateView):
+class UpdateAuthor(PermissionRequiredMixin, generic.UpdateView):
     #   http://127.0.0.1:8000/ref/author-update/7
+    permission_required = 'reference.update_author'
     model = models.Author
     form_class = forms.AuthorForm
     template_name = 'reference/author_update.html'
@@ -47,8 +45,9 @@ class UpdateAuthor(generic.UpdateView):
         return reverse_lazy('reference:author-detail', kwargs={'pk': self.object.pk})
 
 
-class DeleteAuthor(generic.DeleteView):
+class DeleteAuthor(PermissionRequiredMixin, generic.DeleteView):
     #   http://127.0.0.1:8000/ref/author-delete/7
+    permission_required = 'reference.delete_author'
     model = models.Author
     template_name = 'reference/author_delete.html'
     # success_url = f'/ref/author/'
@@ -70,8 +69,9 @@ class ShowSerie(generic.ListView):
         return context
 
 
-class CreateSerie(generic.CreateView):
+class CreateSerie(PermissionRequiredMixin, generic.CreateView):
     #   http://127.0.0.1:8000/ref/series-create
+    permission_required = 'reference.create_serie'
     model = models.Serie
     form_class = forms.SerieForm
     template_name = 'reference/general_create.html'
@@ -83,6 +83,7 @@ class CreateSerie(generic.CreateView):
         context = super().get_context_data(*args, **kwargs)
         context['ref_type'] = 'series'
         return context
+
 
 class ReadSerie(generic.DetailView):
     #   http://127.0.0.1:8000/ref/series/2
@@ -97,8 +98,9 @@ class ReadSerie(generic.DetailView):
         return context
 
 
-class UpdateSerie(generic.UpdateView):
+class UpdateSerie(PermissionRequiredMixin, generic.UpdateView):
     #   http://127.0.0.1:8000/ref/series-update/7
+    permission_required = 'reference.update_serie'
     model = models.Serie
     form_class = forms.SerieForm
     template_name = 'reference/general_update.html'
@@ -112,8 +114,9 @@ class UpdateSerie(generic.UpdateView):
         return context
 
 
-class DeleteSerie(generic.DeleteView):
+class DeleteSerie(PermissionRequiredMixin, generic.DeleteView):
     #   http://127.0.0.1:8000/ref/series-delete/7
+    permission_required = 'reference.delete_serie'
     model = models.Serie
     template_name = 'reference/general_delete.html'
     success_url = reverse_lazy('reference:series-show')
@@ -140,8 +143,9 @@ class ShowGenre(generic.ListView):
         return context
 
 
-class CreateGenre(generic.CreateView):
+class CreateGenre(PermissionRequiredMixin, generic.CreateView):
     #   http://127.0.0.1:8000/ref/genre-create
+    permission_required = 'reference.create_genre'
     model = models.Genre
     form_class = forms.GenreForm
     template_name = 'reference/general_create.html'
@@ -168,8 +172,9 @@ class ReadGenre(generic.DetailView):
         return context
 
 
-class UpdateGenre(generic.UpdateView):
+class UpdateGenre(PermissionRequiredMixin, generic.UpdateView):
     #   http://127.0.0.1:8000/ref/genre-update/7
+    permission_required = 'reference.update_genre'
     model = models.Genre
     form_class = forms.GenreForm
     template_name = 'reference/general_update.html'
@@ -183,8 +188,9 @@ class UpdateGenre(generic.UpdateView):
         return context
 
 
-class DeleteGenre(generic.DeleteView):
+class DeleteGenre(PermissionRequiredMixin, generic.DeleteView):
     #   http://127.0.0.1:8000/ref/genre-delete/7
+    permission_required = 'reference.delete_genre'
     model = models.Genre
     template_name = 'reference/general_delete.html'
     success_url = reverse_lazy('reference:genre-show')
@@ -211,8 +217,9 @@ class ShowPublisher(generic.ListView):
         return context
 
 
-class CreatePublisher(generic.CreateView):
+class CreatePublisher(PermissionRequiredMixin, generic.CreateView):
     #   http://127.0.0.1:8000/ref/publish-create
+    permission_required = 'reference.create_publisher'
     model = models.Publisher
     form_class = forms.PublisherForm
     template_name = 'reference/general_create.html'
@@ -239,8 +246,9 @@ class ReadPublisher(generic.DetailView):
         return context
 
 
-class UpdatePublisher(generic.UpdateView):
+class UpdatePublisher(PermissionRequiredMixin, generic.UpdateView):
     #   http://127.0.0.1:8000/ref/publish-update/7
+    permission_required = 'reference.update_publisher'
     model = models.Publisher
     form_class = forms.PublisherForm
     template_name = 'reference/general_update.html'
@@ -254,8 +262,9 @@ class UpdatePublisher(generic.UpdateView):
         return context
 
 
-class DeletePublisher(generic.DeleteView):
+class DeletePublisher(PermissionRequiredMixin, generic.DeleteView):
     #   http://127.0.0.1:8000/ref/publish-delete/7
+    permission_required = 'reference.delete_publisher'
     model = models.Publisher
     template_name = 'reference/general_delete.html'
     success_url = reverse_lazy('reference:publish-show')

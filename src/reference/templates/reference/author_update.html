@@ -1,14 +1,15 @@
 {% extends "base_conf.html" %}
 {% load crispy_forms_tags %}
+{% load i18n %}
 {% block title %}
-Update author
+{% trans "Update author" %}
 {% endblock title %}
 
 {% block body %}
-    <h1> Update existed author with id = {{ object.pk }} in database </h1>
+    <h1> {% trans "Update existed author with id = " %}{{ object.pk }}{% trans " in database" %} </h1>
     <form action="" method="post">
         {% csrf_token %}
         {{ form|crispy }}
-        <input type="submit" class="btn btn-success" value="Submit">
+        <input type="submit" class="btn btn-success" value="{% trans 'Submit' %}">
     </form>
 {% endblock body %}

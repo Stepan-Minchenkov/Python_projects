@@ -6,7 +6,7 @@ All options
 {% block body %}
     <h1> All available options </h1>
     {% csrf_token %}
-    <a href="admin/" class="btn btn-info">Admin </a>
+    <a href="s-admin/" class="btn btn-info">Admin </a>
     <a href="{% url 'reference:author-show' %}" class="btn btn-info">Authors</a>
     <a href="{% url 'reference:series-show' %}" class="btn btn-info">Series</a>
     <a href="{% url 'reference:genre-show' %}" class="btn btn-info">Genres</a>

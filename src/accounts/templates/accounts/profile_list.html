@@ -1,0 +1,43 @@
+{% extends "accounts/profile_conf.html" %}
+{% load i18n %}
+{% block title %}
+{% trans "Everybody " %}{{ ref_type }}
+{% endblock title %}
+
+{% block body %}
+    <h1> {% trans "All customers" %} </h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-auto">
+                <table border="1" class="table table-bordered table-striped-columns">
+                    <thead>
+                    <tr>
+                        <th> {% trans "Login" %} </th>
+                        <th> {% trans "Phone" %} </th>
+                        <th> {% trans "Country" %} </th>
+                        <th> {% trans "City" %} </th>
+                        <th> {% trans "Zip code" %} </th>
+                        <th> {% trans "Address" %} </th>
+                        <th> {% trans "Address_extra" %} </th>
+                        <th> {% trans "Extra information" %} </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for element in object_list %}
+                    <tr>
+                        <td> {{ element.user_data }} </td>
+                        <td> {{ element.phone }} </td>
+                        <td> {{ element.country }} </td>
+                        <td> {{ element.city }} </td>
+                        <td> {{ element.zip_code }} </td>
+                        <td> {{ element.address1 }} </td>
+                        <td> {{ element.address2 }} </td>
+                        <td> {{ element.information }} </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table><br>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
