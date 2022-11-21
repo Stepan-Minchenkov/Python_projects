@@ -1,32 +1,44 @@
 {% extends "base_conf.html" %}
+{% load i18n %}
 {% block title %}
-All authors
+{% trans "All authors" %}
 {% endblock title %}
 
 {% block body %}
-<h1> All authors in database </h1>
+<h1> {% trans "All authors in database" %} </h1>
     <div class="container">
         <div class="row">
             <div class="col-md-auto">
                 <table border="1" class="table table-bordered table-striped-columns">
+                    <thead>
+                    <tr>
+                        <th>  </th>
+                        <th> {% trans "Name" %} </th>
+                        <th> {% trans "Surname" %} </th>
+                        <th> {% trans "Description" %} </th>
+                        <th>  </th>
+                    </tr>
+                    </thead>
+                    <tbody>
                     {% for author in object_list %}
                     <tr>
                         <td><a href="{% url 'reference:author-update' pk=author.pk %}"
-                               class="btn btn-info">Update record {{ author.pk }}
+                               class="btn btn-info">{% trans "Update record" %} {{ author.pk }}
                             <i class="bi bi-arrow-right-square-fill"></i></a></td>
                         <td> {{ author.name }} </td>
                         <td> {{ author.surname }} </td>
                         <td> {{ author.description| default_if_none:'' }} </td>
                         <td><a href="{% url 'reference:author-delete' pk=author.pk %}"
                                class="btn btn-danger">
-                            <i class="bi bi-x-square-fill"></i> DELETE</a>
+                            <i class="bi bi-x-square-fill"></i> {% trans "DELETE" %}</a>
                         </td>
                     </tr>
                     {% endfor %}
+                    </tbody>
                 </table><br>
             </div>
         </div>
     </div>
     <a href="{% url 'reference:author-create' %}"
-       class="btn btn-primary">Add an author to the list</a>
+       class="btn btn-primary">{% trans "Add an author to the list" %}</a>
 {% endblock body %}

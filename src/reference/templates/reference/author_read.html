@@ -1,14 +1,15 @@
 {% extends "base_conf.html" %}
+{% load i18n %}
 {% block title %}
-Display author
+{% trans "Display author" %}
 {% endblock title %}
 
 {% block body %}
-    <h1> Information for author '{{ object.name }}' with id = {{ object.pk }} </h1>
+    <h1> {% trans "Information for author '" %}{{ object.name }}{% trans "' with id = " %}{{ object.pk }} </h1>
     {% csrf_token %}
-    <h3> Author: {{ object.name }}<br>
-         Surname: {{ object.surname }}<br>
-         Description: {{object.description }}
+    <h3> {% trans "Author" %}:      {{ object.name }}<br>
+         {% trans "Surname" %}:     {{ object.surname }}<br>
+         {% trans "Description" %}: {{object.description }}
     </h3>
-    <a href="{% url 'reference:author-show' %}" class="btn btn-secondary">Back to the list of authors</a>
+    <a href="{% url 'reference:author-show' %}" class="btn btn-secondary">{% trans "Back to the list of authors" %}</a>
 {% endblock body %}

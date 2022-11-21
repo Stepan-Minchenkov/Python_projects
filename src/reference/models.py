@@ -9,13 +9,13 @@ class Author(models.Model):
     description = models.TextField(blank=True, null=True, default='')
 
     def __str__(self):
+        return f"{self.name:20}  {self.surname:20}"
+
+    def __repr__(self):
         if self.description:
             return f"{self.name:20}  {self.surname:20}  {self.description:100}"
         else:
-            return f"{self.name:20}  {self.surname:20}  {' ':100}"
-
-    def __repr__(self):
-        return self.name
+            return f"{self.name:20}  {self.surname:20}"
 
     def get_absolute_url(self):
         # return f'/ref/author/{self.pk}'
@@ -27,13 +27,13 @@ class Serie(models.Model):
     description = models.TextField(blank=True, null=True, default='')
 
     def __str__(self):
+        return self.name
+
+    def __repr__(self):
         if self.description:
             return f"{self.name:20}  {self.description:100}"
         else:
             return f"{self.name}"
-
-    def __repr__(self):
-        return self.name
 
     def get_absolute_url(self):
         return reverse_lazy('reference:series-detail', kwargs={'pk': self.pk})
@@ -44,13 +44,13 @@ class Genre(models.Model):
     description = models.TextField(blank=True, null=True, default='')
 
     def __str__(self):
-        if self.description:
-            return f"{self.name}  {self.description}"
-        else:
-            return f"{self.name}"
+        return self.name
 
     def __repr__(self):
-        return self.name
+        if self.description:
+            return f"{self.name:20}  {self.description:100}"
+        else:
+            return f"{self.name}"
 
     def get_absolute_url(self):
         return reverse_lazy('reference:genre-detail', kwargs={'pk': self.pk})
@@ -61,13 +61,13 @@ class Publisher(models.Model):
     description = models.TextField(blank=True, null=True, default='')
 
     def __str__(self):
+        return self.name
+
+    def __repr__(self):
         if self.description:
             return f"{self.name:20}  {self.description:100}"
         else:
-            return f"{self.name:20}  {' ':100}"
-
-    def __repr__(self):
-        return self.name
+            return f"{self.name:20}"
 
     def get_absolute_url(self):
         return reverse_lazy('reference:publish-detail', kwargs={'pk': self.pk})

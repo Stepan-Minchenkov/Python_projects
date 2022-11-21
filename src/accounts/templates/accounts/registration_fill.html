@@ -1,0 +1,15 @@
+{% extends "base_conf.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% block title %}
+{% trans "Fill in account" %}
+{% endblock title %}
+
+{% block body %}
+        <h1> {% trans "Fill additional data of a user" %} {{ user_name }}</h1>
+        <form method="post" action="">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" value="{% trans 'Submit' %}" />
+        </form>
+{% endblock body %}

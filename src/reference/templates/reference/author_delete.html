@@ -1,16 +1,17 @@
 {% extends "base_conf.html" %}
+{% load i18n %}
 {% block title %}
-Delete author
+{% trans "Delete author" %}
 {% endblock title %}
 
 {% block body %}
-    <h1> Delete existed author from database </h1>
+    <h1> {% trans "Delete existed author from database" %}</h1>
     <form action="" method="post">
         {% csrf_token %}
-        <h3> Author:  {{ object.name }}<br>
-         Surname:     {{ object.surname }}<br>
-         Description: {{ object.description }}
+        <h3> {% trans "Author" %}:      {{ object.name }}<br>
+             {% trans "Surname" %}:     {{ object.surname }}<br>
+             {% trans "Description" %}: {{ object.description }}
         </h3>
-        <input type="submit" class="btn btn-success" value="Confirm">
+        <input type="submit" class="btn btn-success" value="{% trans 'Confirm' %}">
     </form>
 {% endblock body %}
