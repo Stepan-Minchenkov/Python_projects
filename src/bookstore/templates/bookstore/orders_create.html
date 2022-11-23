@@ -2,18 +2,14 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% block title %}
-{% trans "Add book" %}
+{% trans "Add order" %}
 {% endblock title %}
 
 {% block body %}
-    {% if perms.bookstore.add_book %}
-    <h1> {% trans "Add book into database" %} </h1>
+    <h1> {% trans "Add order into database" %} </h1>
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form|crispy }}
         <input type="submit" class="btn btn-success" value="{% trans 'Submit' %}">
     </form>
-    {% else %}
-    <h1> {% trans "You have not rights to add data" %} </h1>
-    {% endif %}
 {% endblock body %}

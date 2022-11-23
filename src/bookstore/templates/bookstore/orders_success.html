@@ -1,0 +1,11 @@
+{% extends "base_conf.html" %}
+{% load i18n %}
+{% block title %}
+{% trans "Success" %}
+{% endblock title %}
+
+{% block body %}
+    <h1> {% trans "Thank you for ordering books on our site." %}
+        {% trans "Our managers will contact you shortly to discuss the delivery." %} </h1>
+    <a href="{% url 'bookstore:book-show' %}" class="btn btn-secondary">{% trans "Back to the list of books" %}</a>
+{% endblock body %}

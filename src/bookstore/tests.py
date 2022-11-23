@@ -6,13 +6,13 @@ import datetime
 from bookstore.models import Book, GoodsInBasket, Basket, Customer
 from reference.models import Author, Serie, Genre, Publisher
 
-user = User.objects.create_user('First', password='first1234')
-b = Customer(user_data=user, email=qq1@mail.ru, phone='123-456', country='BLR',
+user = User.objects.create_user('First', password='first1234', email='qq1@mail.ru')
+b = Customer(user_data=user, phone='123-456', country='BLR',
              city='Minsk', zip_code='22wwww', address1='a', address2='b', information='s')
 b.save()
 
-user = User.objects.create_user('Second', password='second1234')
-b = Customer(user_data=user, email=qq2@mail.ru, phone='123-456', country='BLR',
+user = User.objects.create_user('Second', password='second1234', email='qq2@mail.ru')
+b = Customer(user_data=user, phone='123-456', country='BLR',
              city='Minsk', zip_code='22wwww', address1='a', address2='b', information='s')
 b.save()
 

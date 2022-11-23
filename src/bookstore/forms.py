@@ -1,25 +1,10 @@
 from django import forms
-from bookstore.models import Book
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
-
-
-class FullUserForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
-        model = User
-        # fields = '__all__'
-        fields = [
-            'username',
-            'email',
-            'first_name',
-            'last_name']
+from . import models
 
 
 class BookForm(forms.ModelForm):
     class Meta:
-        model = Book
+        model = models.Book
         # fields = '__all__'
         fields = [
             'name',
@@ -39,3 +24,39 @@ class BookForm(forms.ModelForm):
             'available',
             'active',
             'rate']
+
+
+class GoodsInBasketForm(forms.ModelForm):
+    class Meta:
+        model = models.GoodsInBasket
+        # fields = '__all__'
+        fields = [
+            # 'order',
+            # 'article',
+            'quantity',
+            # 'price',
+            # 'total_sum'
+        ]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        quantity = cleaned_data.get('quantity')
+        if quantity <= 0:
+            self.add_error('quantity', 'value must be positive')
+        return cleaned_data
+
+
+class BasketForm(forms.ModelForm):
+    class Meta:
+        model = models.Basket
+        # fields = '__all__'
+        fields = [
+            # 'customer',
+            # 'order_status',
+            'contact_phone',
+            'order_country',
+            'order_city',
+            'order_zip_code',
+            'order_address1',
+            'order_address2',
+            'order_information']

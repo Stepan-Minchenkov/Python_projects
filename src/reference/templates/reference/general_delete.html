@@ -5,6 +5,7 @@
 {% endblock title %}
 
 {% block body %}
+{% if ref_type == 'genre' and perms.reference.delete_genre %}
     <h1> {% trans "Delete existed " %}{{ ref_type }}{% trans " from database" %} </h1>
     <form action="" method="post">
         {% csrf_token %}
@@ -13,4 +14,25 @@
         </h3>
         <input type="submit" class="btn btn-success" value="{% trans 'Confirm' %}">
     </form>
+{% elif ref_type == 'series' and perms.reference.delete_serie %}
+    <h1> {% trans "Delete existed " %}{{ ref_type }}{% trans " from database" %} </h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        <h3> {{ ref_type_up }}:  {{ object.name }}<br>
+         {% trans "Description" %}: {{ object.description }}
+        </h3>
+        <input type="submit" class="btn btn-success" value="{% trans 'Confirm' %}">
+    </form>
+{% elif ref_type == 'publisher' and perms.reference.delete_publisher %}
+    <h1> {% trans "Delete existed " %}{{ ref_type }}{% trans " from database" %} </h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        <h3> {{ ref_type_up }}:  {{ object.name }}<br>
+         {% trans "Description" %}: {{ object.description }}
+        </h3>
+        <input type="submit" class="btn btn-success" value="{% trans 'Confirm' %}">
+    </form>
+{% else %}
+    <h1> {% trans "You have not rights to delete data" %} </h1>
+{% endif %}
 {% endblock body %}

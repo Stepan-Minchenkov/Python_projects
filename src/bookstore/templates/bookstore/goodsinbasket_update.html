@@ -2,18 +2,14 @@
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% block title %}
-{% trans "Add author" %}
+{% trans "Update book in basket" %}
 {% endblock title %}
 
 {% block body %}
-    {% if perms.reference.add_author %}
-    <h1> {% trans "Add author into database" %} </h1>
-    <form action="" method="post">
+    <h1> {% trans "Update number of books " %}<br> '{{ object.article }}' {% trans "in basket" %}</h1>
+    <form action="" method="post" style="width: 5em">
         {% csrf_token %}
-        {{ form|crispy }}
+        {{ form|crispy}}
         <input type="submit" class="btn btn-success" value="{% trans 'Submit' %}">
     </form>
-    {% else %}
-    <h1> {% trans "You have not rights to add data" %} </h1>
-    {% endif %}
 {% endblock body %}

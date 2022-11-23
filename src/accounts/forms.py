@@ -46,4 +46,4 @@ class ChangeCustomerForm(forms.ModelForm):
         model = Customer
         # fields = '__all__'
         fields = [
-            'phone',]
+            'phone', ]

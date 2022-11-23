@@ -17,7 +17,7 @@ class ShowAuthors(generic.ListView):
 
 class CreateAuthor(PermissionRequiredMixin, generic.CreateView):
     #   http://127.0.0.1:8000/ref/author-create
-    permission_required = 'reference.create_author'
+    permission_required = 'reference.add_author'
     model = models.Author
     form_class = forms.AuthorForm
     template_name = 'reference/author_create.html'
@@ -35,7 +35,7 @@ class ReadAuthor(generic.DetailView):
 
 class UpdateAuthor(PermissionRequiredMixin, generic.UpdateView):
     #   http://127.0.0.1:8000/ref/author-update/7
-    permission_required = 'reference.update_author'
+    permission_required = 'reference.change_author'
     model = models.Author
     form_class = forms.AuthorForm
     template_name = 'reference/author_update.html'
@@ -71,7 +71,7 @@ class ShowSerie(generic.ListView):
 
 class CreateSerie(PermissionRequiredMixin, generic.CreateView):
     #   http://127.0.0.1:8000/ref/series-create
-    permission_required = 'reference.create_serie'
+    permission_required = 'reference.add_serie'
     model = models.Serie
     form_class = forms.SerieForm
     template_name = 'reference/general_create.html'
@@ -100,7 +100,7 @@ class ReadSerie(generic.DetailView):
 
 class UpdateSerie(PermissionRequiredMixin, generic.UpdateView):
     #   http://127.0.0.1:8000/ref/series-update/7
-    permission_required = 'reference.update_serie'
+    permission_required = 'reference.change_serie'
     model = models.Serie
     form_class = forms.SerieForm
     template_name = 'reference/general_update.html'
@@ -145,7 +145,7 @@ class ShowGenre(generic.ListView):
 
 class CreateGenre(PermissionRequiredMixin, generic.CreateView):
     #   http://127.0.0.1:8000/ref/genre-create
-    permission_required = 'reference.create_genre'
+    permission_required = 'reference.add_genre'
     model = models.Genre
     form_class = forms.GenreForm
     template_name = 'reference/general_create.html'
@@ -174,7 +174,7 @@ class ReadGenre(generic.DetailView):
 
 class UpdateGenre(PermissionRequiredMixin, generic.UpdateView):
     #   http://127.0.0.1:8000/ref/genre-update/7
-    permission_required = 'reference.update_genre'
+    permission_required = 'reference.change_genre'
     model = models.Genre
     form_class = forms.GenreForm
     template_name = 'reference/general_update.html'
@@ -219,7 +219,7 @@ class ShowPublisher(generic.ListView):
 
 class CreatePublisher(PermissionRequiredMixin, generic.CreateView):
     #   http://127.0.0.1:8000/ref/publish-create
-    permission_required = 'reference.create_publisher'
+    permission_required = 'reference.add_publisher'
     model = models.Publisher
     form_class = forms.PublisherForm
     template_name = 'reference/general_create.html'
@@ -248,7 +248,7 @@ class ReadPublisher(generic.DetailView):
 
 class UpdatePublisher(PermissionRequiredMixin, generic.UpdateView):
     #   http://127.0.0.1:8000/ref/publish-update/7
-    permission_required = 'reference.update_publisher'
+    permission_required = 'reference.change_publisher'
     model = models.Publisher
     form_class = forms.PublisherForm
     template_name = 'reference/general_update.html'

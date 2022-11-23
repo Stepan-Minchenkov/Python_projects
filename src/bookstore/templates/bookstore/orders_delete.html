@@ -1,0 +1,16 @@
+{% extends "base_conf.html" %}
+{% load i18n %}
+{% block title %}
+{% trans "Delete order" %}
+{% endblock title %}
+
+{% block body %}
+    <h1> {% trans "Delete existed order" %} </h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        <h3> {% trans "Order" %}: {{ object.pk }}<br>
+         {% trans "Status" %}: {{ object.order_status }}
+        </h3>
+        <input type="submit" class="btn btn-success" value="{% trans 'Confirm' %}">
+    </form>
+{% endblock body %}

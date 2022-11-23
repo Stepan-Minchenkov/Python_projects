@@ -5,15 +5,15 @@ from . import models
 
 
 class BasketAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'created', 'updated')
+    list_display = ('pk', 'customer', 'order_status', 'created', 'updated')
 
 
-class GoodsInBasket(admin.ModelAdmin):
-    list_display = ('order', 'article', 'created', 'updated')
+class GoodsInBasketAdmin(admin.ModelAdmin):
+    list_display = ('order', 'article', 'quantity', 'price', 'total_sum', 'created', 'updated')
 
 
 class BookAdmin(admin.ModelAdmin):
-    list_display = ('name', 'authors')
+    list_display = ('name', 'authors', 'created', 'updated')
 
 
 class CustomerAdmin(admin.ModelAdmin):
@@ -23,4 +23,4 @@ class CustomerAdmin(admin.ModelAdmin):
 admin.site.register(models.Customer, CustomerAdmin)
 admin.site.register(models.Book, BookAdmin)
 admin.site.register(models.Basket, BasketAdmin)
-admin.site.register(models.GoodsInBasket, GoodsInBasket)
+admin.site.register(models.GoodsInBasket, GoodsInBasketAdmin)

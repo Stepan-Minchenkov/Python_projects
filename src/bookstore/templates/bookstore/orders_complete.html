@@ -1,0 +1,42 @@
+{% extends "base_conf.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% block title %}
+{% trans "Finalise order" %}
+{% endblock title %}
+
+{% block body %}
+    <h1> {% trans "Finalise order with id = " %}{{ object.pk }}</h1>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <table border="1" class="table table-bordered table-striped-columns">
+            <thead>
+            <tr>
+                <th> {% trans "Name" %} </th>
+                <th> {% trans "Quantity" %} </th>
+                <th> {% trans "Price per unit" %} </th>
+                <th> {% trans "Price" %} </th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for element in basket.goodsinbasket.all %}
+                <tr>
+                    <td><a class="nav-link active" style="text-decoration: underline"
+                           href="{% url 'bookstore:book-detail' pk=element.article.pk %}">
+                        {{ element.article.name }}</a></td>
+                    <td> {{ element.quantity }}</td>
+                    <td> {{ element.price }} </td>
+                    <td> {{ element.total_sum }} </td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td>  </td>
+                    <td colspan="2">Total</td>
+                    <td>{{ basket.total_price }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit" class="btn btn-success" value="{% trans 'Submit' %}">
+    </form>
+{% endblock body %}
