@@ -1,7 +1,7 @@
 {% extends "base_conf.html" %}
 {% load i18n %}
 {% block title %}
-{% trans "Display " %}{{ ref_type }}
+{% trans "Display book" %}
 {% endblock title %}
 
 {% block body %}
@@ -11,7 +11,7 @@
         border-collapse: collapse;
         }
 </style>
-<h1> {% trans "Information for " %}{{ ref_type }} '{{ object.name }}' </h1>
+<h1> {% trans "Information for book" %} '{{ object.name }}' </h1>
     {% csrf_token %}
     <div class="col-md-auto">
         <table border="1" class="table table-bordered table-striped-columns">
@@ -27,11 +27,19 @@
                 <td>
                     <table>
                         <tr><td>{% trans "Book" %}:</td>  <td>{{ object.name }}</td></tr>
-                        <tr><td>{% trans "Price" %}:</td>  <td>{{ object.price }}</td></tr>
-                        <tr><td>{% trans "Author" %}:</td>  <td>{{ object.authors }}</td></tr>
-                        <tr><td>{% trans "Series" %}:</td>  <td>{{ object.series }}</td></tr>
-                        <tr><td>{% trans "Genre" %}:</td>  <td>{{ object.genre }}</td></tr>
-                        <tr><td>{% trans "Publisher" %}:</td>  <td>{{ object.publisher }}</td></tr>
+                        <tr><td>{% trans "Price" %}:</td>
+                            <td><form action="{% url 'bookstore:goodsinbasket-create' %}" method="post">
+                            {{ object.price }}
+                            {% csrf_token %}
+                            <input type="number" name="quantity" value="1" step="1" min="1" maxlength="4"
+                                   style="width: 5em">
+                            <button type="submit" class="btn btn-success">{% trans 'Add to Cart' %}</button>
+                            <input type="hidden" name="goods_pk" value="{{object.pk}}">
+                            </form></td></tr>
+                        <tr><td>{% trans "Author" %}:</td>  <td>{{ object.authors.name }} {{ object.authors.surname }}</td></tr>
+                        <tr><td>{% trans "Series" %}:</td>  <td>{{ object.series.name }}</td></tr>
+                        <tr><td>{% trans "Genre" %}:</td>  <td>{{ object.genre.name }}</td></tr>
+                        <tr><td>{% trans "Publisher" %}:</td>  <td>{{ object.publisher.name }}</td></tr>
                         <tr><td>{% trans "Year of publishing" %}:</td>  <td>{{ object.publish_year }}</td></tr>
                         <tr><td>{% trans "Number of pages" %}:</td>  <td>{{ object.number_of_pages }}</td></tr>
                         <tr><td>{% trans "Cover" %}:</td>  <td>{{ object.cover }}</td></tr>
@@ -45,7 +53,7 @@
                 </td>
             </tr>
             </tbody>
-        </table><br>
+        </table>
     </div>
-    <a href="{% url ref_url %}" class="btn btn-secondary">{% trans "Back to the list of " %}{{ ref_type }}</a>
+    <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Go back</a>
 {% endblock body %}

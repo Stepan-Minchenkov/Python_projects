@@ -1,0 +1,42 @@
+{% extends "base_conf.html" %}
+{% load i18n %}
+{% block title %}
+{% trans "All customer orders" %}
+{% endblock title %}
+
+{% block body %}
+<h1> {% trans "All orders of the customer in database" %} </h1>
+    {% csrf_token %}
+    <div class="col-md-auto">
+        <table border="1" class="table table-bordered table-striped-columns">
+            <thead>
+            <tr>
+                <th> {% trans "Order number" %} </th>
+                <th> {% trans "Status" %} </th>
+                <th> {% trans "Books in order" %} </th>
+                <th> {% trans "Sum" %} </th>
+                <th> {% trans "Created" %} </th>
+                <th> {% trans "Updated" %} </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for element in basket %}
+                <tr>
+                    <td><a class="nav-link active" style="text-decoration: underline"
+                           href="{% url 'bookstore:orders-detail' pk=element.pk %}">
+                        {{ element.pk }}</a></td>
+                    <td> {{ element.order_status }} </td>
+                    <td>{{ element.total_books_number}}</td>
+                    <td> {{ element.total_price }} </td>
+                    <td> {{ element.created }} </td>
+                    <td> {{ element.updated }} </td>
+                    <td><a href="{% url 'bookstore:orders-delete' pk=element.pk %}"
+                                class="btn btn-danger">{% trans "DELETE" %}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="{% url 'homepage' %}" class="btn btn-secondary">{% trans "Home" %}</a><br>
+{% endblock body %}

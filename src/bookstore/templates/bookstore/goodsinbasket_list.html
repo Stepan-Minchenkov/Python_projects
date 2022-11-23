@@ -1,0 +1,46 @@
+{% extends "base_conf.html" %}
+{% load i18n %}
+{% block title %}
+{% trans "All goods in basket" %}
+{% endblock title %}
+
+{% block body %}
+<h1> {% trans "Information for basket" %} '{{ basket }}' </h1>
+    {% csrf_token %}
+    <div class="col-md-auto">
+        <table border="1" class="table table-bordered table-striped-columns">
+            <thead>
+            <tr>
+                <th> {% trans "Name" %} </th>
+                <th> {% trans "Quantity" %} </th>
+                <th> {% trans "Price per unit" %} </th>
+                <th> {% trans "Price" %} </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for element in basket.goodsinbasket.all %}
+                <tr>
+                    <td><a class="nav-link active" style="text-decoration: underline"
+                           href="{% url 'bookstore:book-detail' pk=element.article.pk %}">
+                        {{ element.article.name }}</a></td>
+                    <td> {{ element.quantity }}
+                        <a href="{% url 'bookstore:goodsinbasket-update' pk=element.pk %}">
+                            <i class="bi bi-arrow-down-up"></i></a></td>
+                    <td> {{ element.price }} </td>
+                    <td> {{ element.total_sum }} </td>
+                    <td><a href="{% url 'bookstore:goodsinbasket-delete' pk=element.pk %}"
+                                class="btn btn-danger">{% trans "DELETE" %}</a></td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td>  </td>
+                    <td colspan="2">Total</td>
+                    <td>{{ basket.total_price }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <a href="{% url 'bookstore:book-show' %}" class="btn btn-secondary">{% trans "Back to the list of books" %}</a><br>
+    <a href="{% url 'bookstore:orders-complete' pk=basket.pk %}" class="btn btn-secondary">{% trans "Order" %}</a>
+{% endblock body %}

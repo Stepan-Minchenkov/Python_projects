@@ -1,0 +1,47 @@
+{% extends "base_conf.html" %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+{% block title %}
+{% trans "Update order" %}
+{% endblock title %}
+
+{% block body %}
+    <h1> {% trans "Update order with id = " %}{{ object.pk }}</h1>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <table border="1" class="table table-bordered table-striped-columns">
+            <thead>
+            <tr>
+                <th> {% trans "Name" %} </th>
+                <th> {% trans "Quantity" %} </th>
+                <th> {% trans "Price per unit" %} </th>
+                <th> {% trans "Price" %} </th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for element in basket.goodsinbasket.all %}
+                <tr>
+                    <td><a class="nav-link active" style="text-decoration: underline"
+                           href="{% url 'bookstore:book-detail' pk=element.article.pk %}">
+                        {{ element.article.name }}</a></td>
+                    <td> {{ element.quantity }}
+                        <a href="{% url 'bookstore:goodsinbasket-update' pk=element.pk %}">
+                            <i class="bi bi-arrow-down-up"></i></a></td>
+                    <td> {{ element.price }} </td>
+                    <td> {{ element.total_sum }} </td>
+                    <td><a href="{% url 'bookstore:goodsinbasket-delete' pk=element.pk %}"
+                                class="btn btn-danger">{% trans "DELETE" %}</a></td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td>  </td>
+                    <td colspan="2">Total</td>
+                    <td>{{ basket.total_price }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit" class="btn btn-success" value="{% trans 'Submit' %}">
+    </form>
+{% endblock body %}

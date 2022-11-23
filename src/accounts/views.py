@@ -6,6 +6,8 @@ from django.views.generic import ListView, DetailView, UpdateView, TemplateView
 from . import models, forms
 from django.contrib.auth.models import Group
 from bookstore.models import Customer, Book
+from reference.models import Author
+from django.db.models import Q
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import update_session_auth_hash
@@ -22,7 +24,11 @@ class Homepage(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        top_books = Book.objects.all()
+        top_books = Book.objects.all().order_by('-updated')[:10]
+        # top_books = Book.objects.values_list('name', 'price')
+        # top_books = Book.objects.filter(
+        #     Q(authors__in=Author.objects.filter(Q(name='Agatha') | Q(name='Эдит')))
+        # )
         context['object_list'] = top_books
         return context
 
@@ -89,7 +95,7 @@ class Profile(DetailView):
         if userid != None:
             self.kwargs["pk"] = userid
         else:
-            raise Http404("Error")   # does not work!!! to do the corrections
+            raise Http404("Error")
 
 
 class ProfileEdit(PermissionRequiredMixin, UpdateView):

@@ -12,26 +12,34 @@
                 <table border="1" class="table table-bordered table-striped-columns">
                     <thead>
                     <tr>
+                        {% if perms.reference.change_author %}
                         <th>  </th>
+                        {% endif %}
                         <th> {% trans "Name" %} </th>
                         <th> {% trans "Surname" %} </th>
                         <th> {% trans "Description" %} </th>
+                        {% if perms.reference.delete_author %}
                         <th>  </th>
+                        {% endif %}
                     </tr>
                     </thead>
                     <tbody>
                     {% for author in object_list %}
                     <tr>
+                        {% if perms.reference.change_author %}
                         <td><a href="{% url 'reference:author-update' pk=author.pk %}"
                                class="btn btn-info">{% trans "Update record" %} {{ author.pk }}
                             <i class="bi bi-arrow-right-square-fill"></i></a></td>
+                        {% endif %}
                         <td> {{ author.name }} </td>
                         <td> {{ author.surname }} </td>
-                        <td> {{ author.description| default_if_none:'' }} </td>
+                        <td width="40%"> {{ author.description| default_if_none:'' }} </td>
+                        {% if perms.reference.delete_author %}
                         <td><a href="{% url 'reference:author-delete' pk=author.pk %}"
                                class="btn btn-danger">
                             <i class="bi bi-x-square-fill"></i> {% trans "DELETE" %}</a>
                         </td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                     </tbody>
@@ -39,6 +47,8 @@
             </div>
         </div>
     </div>
+    {% if perms.reference.add_author %}
     <a href="{% url 'reference:author-create' %}"
        class="btn btn-primary">{% trans "Add an author to the list" %}</a>
+    {% endif %}
 {% endblock body %}

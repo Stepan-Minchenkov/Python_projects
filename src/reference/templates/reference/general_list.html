@@ -12,21 +12,49 @@
                 <table border="1" class="table table-bordered table-striped-columns">
                     <thead>
                     <tr>
-                        <th>  </th>
+                        {% if ref_type == 'genre' and perms.reference.change_genre %}
+                            <th>  </th>
+                        {% elif ref_type == 'series' and perms.reference.change_serie %}
+                            <th>  </th>
+                        {% elif ref_type == 'publisher' and perms.reference.change_publisher %}
+                            <th>  </th>
+                        {% endif %}
                         <th> {% trans "Name" %} </th>
                         <th> {% trans "Description" %} </th>
-                        <th>  </th>
+                        {% if ref_type == 'genre' and perms.reference.delete_genre %}
+                            <th>  </th>
+                        {% elif ref_type == 'series' and perms.reference.delete_serie %}
+                            <th>  </th>
+                        {% elif ref_type == 'publisher' and perms.reference.delete_publisher %}
+                            <th>  </th>
+                        {% endif %}
                     </tr>
                     </thead>
                     <tbody>
                     {% for element in object_list %}
                     <tr>
-                        <td><a href="{% url ref_url_update pk=element.pk %}"
+                        {% if ref_type == 'genre' and perms.reference.change_genre %}
+                            <td><a href="{% url ref_url_update pk=element.pk %}"
                                class="btn btn-info">{% trans "Update record " %}{{ element.pk }} </a></td>
-                        <td> {{ element.name }} </td>
-                        <td> {{ element.description| default_if_none:'' }} </td>
-                         <td><a href="{% url ref_url_delete pk=element.pk %}"
+                        {% elif ref_type == 'series' and perms.reference.change_serie %}
+                            <td><a href="{% url ref_url_update pk=element.pk %}"
+                               class="btn btn-info">{% trans "Update record " %}{{ element.pk }} </a></td>
+                        {% elif ref_type == 'publisher' and perms.reference.change_publisher %}
+                            <td><a href="{% url ref_url_update pk=element.pk %}"
+                               class="btn btn-info">{% trans "Update record " %}{{ element.pk }} </a></td>
+                        {% endif %}
+                        <td width="20%"> {{ element.name }} </td>
+                        <td width="40%"> {{ element.description| default_if_none:'' }} </td>
+                        {% if ref_type == 'genre' and perms.reference.delete_genre %}
+                            <td><a href="{% url ref_url_delete pk=element.pk %}"
                                 class="btn btn-danger">{% trans "DELETE" %}</a></td>
+                        {% elif ref_type == 'series' and perms.reference.delete_serie %}
+                            <td><a href="{% url ref_url_delete pk=element.pk %}"
+                                class="btn btn-danger">{% trans "DELETE" %}</a></td>
+                        {% elif ref_type == 'publisher' and perms.reference.delete_publisher %}
+                            <td><a href="{% url ref_url_delete pk=element.pk %}"
+                                class="btn btn-danger">{% trans "DELETE" %}</a></td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                     </tbody>
@@ -34,6 +62,14 @@
             </div>
         </div>
     </div>
-    <a href="{% url ref_url_create %}"
+    {% if ref_type == 'genre' and perms.reference.add_genre %}
+       <a href="{% url ref_url_create %}"
        class="btn btn-primary">{% trans "Add " %}{{ ref_type }}{% trans " to the list" %}</a>
+    {% elif ref_type == 'series' and perms.reference.add_serie %}
+       <a href="{% url ref_url_create %}"
+       class="btn btn-primary">{% trans "Add " %}{{ ref_type }}{% trans " to the list" %}</a>
+    {% elif ref_type == 'publisher' and perms.reference.add_publisher %}
+       <a href="{% url ref_url_create %}"
+       class="btn btn-primary">{% trans "Add " %}{{ ref_type }}{% trans " to the list" %}</a>
+    {% endif %}
 {% endblock body %}

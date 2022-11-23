@@ -1,0 +1,58 @@
+{% extends "base_conf.html" %}
+{% load i18n %}
+{% block title %}
+{% trans "Order detail" %}
+{% endblock title %}
+
+{% block body %}
+<h1> {% trans "All books in order" %} {{basket.pk}}</h1><br>
+    {% csrf_token %}
+    <div class="col-md-auto">
+        <h3> {% trans "Users data for order" %}</h3>
+        <table border="1" class="table table-bordered table-striped-columns">
+            <tbody>
+            <tr><td>{% trans "Status" %}:</td>  <td>{{ object.order_status }}</td></tr>
+            <tr><td>{% trans "Phone" %}:</td>  <td>{{ object.contact_phone }}</td></tr>
+            <tr><td>{% trans "Country" %}:</td>  <td>{{ object.order_country }}</td></tr>
+            <tr><td>{% trans "City" %}:</td>  <td>{{ object.order_city }}</td></tr>
+            <tr><td>{% trans "ZIP code" %}:</td>  <td>{{ object.order_zip_code }}</td></tr>
+            <tr><td>{% trans "Address" %}:</td>  <td>{{ object.order_address1 }}</td></tr>
+            <tr><td>{% trans "Address extra" %}:</td>  <td>{{ object.order_address2 }}</td></tr>
+            <tr><td>{% trans "Information" %}:</td>  <td>{{ object.order_information }}</td></tr>
+            <tbody>
+        </table><br>
+        <h3> {% trans "Books in order" %}</h3><br>
+        <table border="1" class="table table-bordered table-striped-columns">
+            <thead>
+            <tr>
+                <th> {% trans "Name" %} </th>
+                <th> {% trans "Quantity" %} </th>
+                <th> {% trans "Price per unit" %} </th>
+                <th> {% trans "Price" %} </th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for element in basket.goodsinbasket.all %}
+                    <tr>
+                        <td><a class="nav-link active" style="text-decoration: underline"
+                               href="{% url 'bookstore:book-detail' pk=element.article.pk %}">
+                        {{ element.article.name }}</a></td>
+                        <td> {{ element.quantity }}</td>
+                        <td> {{ element.price }} </td>
+                        <td> {{ element.total_sum }} </td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td>  </td>
+                        <td colspan="2">Total</td>
+                        <td>{{ basket.total_price }}</td>
+                    </tr>
+            <tbody>
+        </table>
+    </div>
+    {% if object.order_status == 'not_submitted' or object.order_status == 'created' %}
+        <a href="{% url 'bookstore:orders-update' pk=basket.pk %}"
+           class="btn btn-secondary">{% trans "Update" %}</a>
+    {% endif %}
+    <a href="{% url 'homepage' %}" class="btn btn-secondary">{% trans "Home" %}</a>
+{% endblock body %}

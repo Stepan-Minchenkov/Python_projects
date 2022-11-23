@@ -1,16 +1,15 @@
 {% extends "base_conf.html" %}
 {% load i18n %}
 {% block title %}
-{% trans "Delete book" %}
+{% trans "Delete goodsinbasket" %}
 {% endblock title %}
 
 {% block body %}
-    {% if perms.bookstore.delete_book %}
-    <h1> {% trans "Delete existed book from database" %} </h1>
+    {% if perms.bookstore.delete_goodsinbasket %}
+    <h1> {% trans "Delete book from basket" %} </h1>
     <form action="" method="post">
         {% csrf_token %}
-        <h3> {% trans "Book" %}:  {{ object.name }}<br>
-         {% trans "Description" %}: {{ object.description }}
+        <h3>{% trans "Book" %}:  {{ object.article.name }}<br>
         </h3>
         <input type="submit" class="btn btn-success" value="{% trans 'Confirm' %}">
     </form>

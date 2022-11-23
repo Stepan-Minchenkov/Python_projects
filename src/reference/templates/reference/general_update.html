@@ -6,6 +6,7 @@
 {% endblock title %}
 
 {% block body %}
+{% if ref_type == 'genre' and perms.reference.change_genre %}
     <h1> {% trans "Update existed " %}{{ ref_type }}{% trans " with id = " %}{{ object.pk }}
          {% trans " in database " %}</h1>
     <form action="" method="post">
@@ -13,4 +14,23 @@
         {{ form|crispy }}
         <input type="submit" class="btn btn-success" value="{% trans 'Submit' %}">
     </form>
+{% elif ref_type == 'series' and perms.reference.change_serie %}
+    <h1> {% trans "Update existed " %}{{ ref_type }}{% trans " with id = " %}{{ object.pk }}
+         {% trans " in database " %}</h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" class="btn btn-success" value="{% trans 'Submit' %}">
+    </form>
+{% elif ref_type == 'publisher' and perms.reference.change_publisher %}
+    <h1> {% trans "Update existed " %}{{ ref_type }}{% trans " with id = " %}{{ object.pk }}
+         {% trans " in database " %}</h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <input type="submit" class="btn btn-success" value="{% trans 'Submit' %}">
+    </form>
+{% else %}
+    <h1> {% trans "You have not rights to change data" %} </h1>
+{% endif %}
 {% endblock body %}
