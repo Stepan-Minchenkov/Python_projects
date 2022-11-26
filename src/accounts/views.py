@@ -6,7 +6,6 @@ from django.views.generic import ListView, DetailView, UpdateView, TemplateView
 from . import models, forms
 from django.contrib.auth.models import Group
 from bookstore.models import Customer, Book
-from reference.models import Author
 from django.db.models import Q
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
@@ -14,6 +13,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import Http404
+from django.core.exceptions import PermissionDenied
 
 User = get_user_model()
 
@@ -74,55 +74,111 @@ class ProfileList(ListView):
     model = Customer
     template_name = 'accounts/profile_list.html'
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        current_user = User.objects.filter(username=self.request.user)
+        if current_user:
+            current_user = User.objects.get(username=self.request.user)
+            context['object_list'] = \
+                Customer.objects.filter(Q(user_data__in=
+                                          User.objects.filter(Q(groups__name="Customers") &
+                                                              ~Q(username=current_user))
+                                          ))
+        return context
+
+
+class ProfileListCustomers(ListView):
+    model = Customer
+    template_name = 'accounts/profile_list_customers.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['object_list'] = User.objects.filter(Q(groups__name="Customers"))
+        return context
+
+
+class ProfileListManagers(ListView):
+    model = Customer
+    template_name = 'accounts/profile_list_managers.html'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['object_list'] = User.objects.filter(Q(groups__name="Managers"))
+        return context
+
 
 class Profile(DetailView):
     model = User
-    template_name = 'accounts/profile.html'
+    template_name = 'accounts/profile_read.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_groups = []
-        for group in context['object'].groups.all():
-            user_groups.append(group.name)
-        customer_data, created = Customer.objects.get_or_create(user_data=self.request.user.id)
-        context['customer_data'] = customer_data
-        context['user_groups'] = user_groups
+        user = User.objects.get(username=self.request.user)
+        Customer.objects.get_or_create(
+            user_data=user,
+            defaults={
+                'phone': '',
+                'country': '',
+                'city': '',
+                'zip_code': '',
+                'address1': '',
+                'address2': ''
+            }
+        )
         return context
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        userid = request.user.id
-        if userid != None:
-            self.kwargs["pk"] = userid
-        else:
-            raise Http404("Error")
+        if self.kwargs["pk"] is None:
+            userid = request.user.id
+            if userid is not None:
+                self.kwargs["pk"] = userid
+            else:
+                raise Http404("Error")
 
 
 class ProfileEdit(PermissionRequiredMixin, UpdateView):
-    permission_required = ('reference.update_customer', 'reference.update_user')
+    permission_required = ('bookstore.change_customer', 'auth.change_user')
     model = User
     form_class = forms.ChangeProfileForm
     template_name = 'accounts/profile_edit.html'
 
-    def get_success_url(self):
-        customer_data, created = Customer.objects.get_or_create(user_data=self.request.user.id)
-        return reverse_lazy('accounts:profile_edit_fill', kwargs={'pk': customer_data.pk})
+    def get(self, request, *args, **kwargs):
+        get_object = super().get(self, request, *args, **kwargs)
+        if self.request.user.pk != self.object.pk:
+            raise PermissionDenied()
+        return get_object
 
-
-class ProfileEditFill(PermissionRequiredMixin, UpdateView):
-    permission_required = ('reference.update_customer', 'reference.update_user')
-    model = Customer
-    form_class = forms.ChangeCustomerForm
-    template_name = 'accounts/profile_edit_fill.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['user_name'] = self.request.user
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        user = User.objects.get(username=self.request.user)
+        customer, created = Customer.objects.get_or_create(
+            user_data=user,
+            defaults={
+                'phone': '',
+                'country': '',
+                'city': '',
+                'zip_code': '',
+                'address1': '',
+                'address2': ''
+            }
+        )
+        object_temp = context.get('object')
+        del context['form']
+        context['form'] = forms.ChangeProfileForm(data={
+            'email': object_temp.email,
+            'first_name': object_temp.first_name,
+            'last_name': object_temp.last_name,
+            'phone': customer.phone,
+        })
         return context
 
     def form_valid(self, form):
-        form.save()
+        customer = Customer.objects.get(user_data=self.request.user)
+        # customer.phone = form.cleaned_data['phone']
+        customer.phone = form['phone'].value()
+        customer.save()
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('homepage')
+        return reverse_lazy('accounts:profile')

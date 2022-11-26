@@ -38,7 +38,7 @@
                 <li><a class="dropdown-item" href="{% url 'reference:series-show' %}">Series</a></li>
                 <li><a class="dropdown-item" href="{% url 'reference:genre-show' %}">Genres</a></li>
                 <li><a class="dropdown-item" href="{% url 'reference:publish-show' %}">Publishers</a></li>
-                {% if user.is_authenticated %}
+                {% if perms.auth.manager  or  perms.auth.admin %}
                 <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="/s-admin/">Administation portal</a></li>
                 {% endif %}

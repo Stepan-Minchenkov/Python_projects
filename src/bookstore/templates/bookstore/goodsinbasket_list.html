@@ -19,7 +19,7 @@
             </tr>
             </thead>
             <tbody>
-                {% for element in basket.goodsinbasket.all %}
+                {% for element in basket.goodsinbaskets.all %}
                 <tr>
                     <td><a class="nav-link active" style="text-decoration: underline"
                            href="{% url 'bookstore:book-detail' pk=element.article.pk %}">

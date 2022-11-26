@@ -9,8 +9,7 @@
     <h1> {% trans "Delete existed book from database" %} </h1>
     <form action="" method="post">
         {% csrf_token %}
-        <h3> {% trans "Book" %}:  {{ object.name }}<br>
-         {% trans "Description" %}: {{ object.description }}
+        <h3> {% trans "Book" %}:  {{ object.name }}
         </h3>
         <input type="submit" class="btn btn-success" value="{% trans 'Confirm' %}">
     </form>
