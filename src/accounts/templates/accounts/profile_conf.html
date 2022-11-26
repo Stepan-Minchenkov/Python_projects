@@ -27,14 +27,29 @@
               <a class="nav-link active" aria-current="page" href="{% url 'homepage' %}">Home</a>
               </li>
               <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'bookstore:orders-show'%}">Orders</a>
+              </li>
+              <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="{% url 'accounts:profile' %}">View</a>
               </li>
               <li class="nav-item">
               <a class="nav-link active" aria-current="page" href="{% url 'accounts:profile_edit' pk=user.id %}">Edit</a>
               </li>
+              {% if perms.auth.registered_customer %}
               <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'accounts:profile_list' %}">All Customers</a>
+              <a class="nav-link active" aria-current="page" href="{% url 'accounts:profile_list' %}">Other Customers</a>
               </li>
+              {% endif %}
+              {% if perms.auth.manager  or  perms.auth.admin %}
+              <li class="nav-item">
+              <a class="nav-link active" aria-current="page"
+                 href="{% url 'accounts:profile_list_customers' %}">Customers</a>
+              </li>
+              <li class="nav-item">
+              <a class="nav-link active" aria-current="page"
+                 href="{% url 'accounts:profile_list_managers' %}">Managers</a>
+              </li>
+              {% endif %}
           </ul>
           {% endif %}
         </div>

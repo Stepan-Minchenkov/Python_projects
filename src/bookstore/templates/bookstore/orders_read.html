@@ -32,7 +32,7 @@
             </tr>
             </thead>
             <tbody>
-                {% for element in basket.goodsinbasket.all %}
+                {% for element in basket.goodsinbaskets.all %}
                     <tr>
                         <td><a class="nav-link active" style="text-decoration: underline"
                                href="{% url 'bookstore:book-detail' pk=element.article.pk %}">
@@ -50,9 +50,15 @@
             <tbody>
         </table>
     </div>
-    {% if object.order_status == 'not_submitted' or object.order_status == 'created' %}
+    {% if perms.auth.manager  or  perms.auth.admin %}
         <a href="{% url 'bookstore:orders-update' pk=basket.pk %}"
            class="btn btn-secondary">{% trans "Update" %}</a>
+    {% else %}
+        {% if object.order_status == 'not_submitted' or object.order_status == 'created' %}
+            <a href="{% url 'bookstore:orders-update' pk=basket.pk %}"
+            class="btn btn-secondary">{% trans "Update" %}</a>
+        {% endif %}
     {% endif %}
+    <a href="{% url 'bookstore:orders-show' %}" class="btn btn-secondary">{% trans "Back to the list of orders" %}</a>
     <a href="{% url 'homepage' %}" class="btn btn-secondary">{% trans "Home" %}</a>
 {% endblock body %}

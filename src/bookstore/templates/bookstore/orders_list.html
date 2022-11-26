@@ -11,6 +11,9 @@
         <table border="1" class="table table-bordered table-striped-columns">
             <thead>
             <tr>
+                {% if perms.auth.manager  or  perms.auth.admin %}
+                <th> {% trans "Customer name" %} </th>
+                {% endif %}
                 <th> {% trans "Order number" %} </th>
                 <th> {% trans "Status" %} </th>
                 <th> {% trans "Books in order" %} </th>
@@ -23,6 +26,14 @@
             <tbody>
                 {% for element in basket %}
                 <tr>
+                    {% if perms.auth.manager  or  perms.auth.admin %}
+                    <td>{{ element.customer.username }}</td>
+                    {% endif %}
+                    {% if False %}
+                    <td><a class="nav-link active" style="text-decoration: underline"
+                           href="{% url 'accounts:others_profile' pk=element.customer.pk %}">
+                        {{ element.customer.username }}</a></td>
+                    {% endif %}
                     <td><a class="nav-link active" style="text-decoration: underline"
                            href="{% url 'bookstore:orders-detail' pk=element.pk %}">
                         {{ element.pk }}</a></td>
@@ -31,12 +42,22 @@
                     <td> {{ element.total_price }} </td>
                     <td> {{ element.created }} </td>
                     <td> {{ element.updated }} </td>
-                    <td><a href="{% url 'bookstore:orders-delete' pk=element.pk %}"
-                                class="btn btn-danger">{% trans "DELETE" %}</a></td>
+                    {% if perms.auth.manager  or  perms.auth.admin %}
+                        <td><a href="{% url 'bookstore:orders-delete' pk=element.pk %}"
+                            class="btn btn-danger">{% trans "DELETE" %}</a></td>
+                    {% else %}
+                        {% if element.order_status == 'not_submitted' or element.order_status == 'created' %}
+                            <td><a href="{% url 'bookstore:orders-delete' pk=element.pk %}"
+                            class="btn btn-danger">{% trans "DELETE" %}</a></td>
+                        {% else %}
+                            <td><a href="" class="btn btn-secondary">{% trans "DELETE" %}</a></td>
+                        {% endif %}
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+    <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Go back</a>
     <a href="{% url 'homepage' %}" class="btn btn-secondary">{% trans "Home" %}</a><br>
 {% endblock body %}

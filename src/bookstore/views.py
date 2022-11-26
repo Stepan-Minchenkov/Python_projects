@@ -1,11 +1,10 @@
 from django.shortcuts import render
-from . import models
-from django.views.generic.edit import FormView
 from django.views import View
 from django.views import generic
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from . import models, forms
+from django.core.exceptions import PermissionDenied
 
 
 # Create your views here.
@@ -83,8 +82,12 @@ class ShowBasket(generic.ListView):
         basket = None
 
         if self.request.user.is_authenticated:
-            customer = self.request.user
-            basket = models.Basket.objects.filter(customer=customer)
+            if self.request.user.has_perm("auth.manager") or \
+                    self.request.user.has_perm("auth.admin"):
+                basket = models.Basket.objects.all().order_by("customer", "created")
+            elif self.request.user.has_perm("auth.registered_customer"):
+                customer = self.request.user
+                basket = models.Basket.objects.filter(customer=customer)
 
         context['basket'] = basket
         return context
@@ -105,6 +108,31 @@ class UpdateBasket(generic.UpdateView):
     model = models.Basket
     form_class = forms.BasketForm
     template_name = 'bookstore/orders_update.html'
+
+    def get(self, request, *args, **kwargs):
+        get_object = super().get(self, request, *args, **kwargs)
+        if not self.request.user.is_authenticated:
+            if request.session['basket_pk'] != self.object.pk:
+                raise PermissionDenied()
+
+        if not self.request.user.has_perm("auth.manager") and \
+                not self.request.user.has_perm("auth.admin"):
+            customer = self.request.user
+            baskets = models.Basket.objects.filter(customer=customer)
+            customer_basket = False
+            for basket in baskets:
+                if basket.pk == self.object.pk:
+                    customer_basket = True
+                    break
+
+            if not customer_basket:
+                raise PermissionDenied()
+        return get_object
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
 
     def get_success_url(self):
         del self.request.session['update_basket_id']
@@ -248,6 +276,11 @@ class BasketComplete(generic.UpdateView):
     form_class = forms.BasketForm
     template_name = 'bookstore/orders_complete.html'
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
+
     def get_success_url(self):
         del self.request.session['basket_pk']
         return reverse_lazy('bookstore:orders-complete-done')
@@ -259,18 +292,41 @@ class BasketComplete(generic.UpdateView):
         if basket_id:
             basket = models.Basket.objects.get(pk=basket_id)
             if basket.customer:
-                customer_data = models.Customer.objects.get(user_data=basket.customer.id)
-                object_temp = context.get('object')
-                object_temp.contact_phone = customer_data.phone
-                object_temp.contact_phone = customer_data.phone
-                object_temp.order_country = customer_data.country
-                object_temp.order_city = customer_data.city
-                object_temp.order_zip_code = customer_data.zip_code
-                object_temp.order_address1 = customer_data.address1
-                object_temp.order_address2 = customer_data.address2
-                object_temp.order_information = customer_data.information
-                context['form'] = forms.BasketForm(instance=object_temp)  #memory leak?? what happens with original form?
+                customer_data = models.Customer.objects.filter(user_data=basket.customer.id)
+                if customer_data:
+                    customer_data = models.Customer.objects.get(user_data=basket.customer.id)
+                    object_temp = context.get('object')
+                    object_temp.contact_phone = customer_data.phone
+                    object_temp.order_country = customer_data.country
+                    object_temp.order_city = customer_data.city
+                    object_temp.order_zip_code = customer_data.zip_code
+                    object_temp.order_address1 = customer_data.address1
+                    object_temp.order_address2 = customer_data.address2
+                    object_temp.order_information = customer_data.information
+                    del context['form']
+                    context['form'] = forms.BasketForm(instance=object_temp, request=self.request)
         return context
+
+    # def get_form(self, *args, **kwargs):
+    #     form = super().get_form(*args, **kwargs)
+    #     basket_id = int(self.request.session.get('basket_pk', 0))
+    #     print(form)
+    #     if basket_id:
+    #         basket = models.Basket.objects.get(pk=basket_id)
+    #         if basket.customer:
+    #             customer_data = models.Customer.objects.filter(user_data=basket.customer.id)
+    #             if customer_data:
+    #                 customer_data = models.Customer.objects.get(user_data=basket.customer.id)
+    #                 form.instance.contact_phone = customer_data.phone
+    #                 form.instance.order_country = customer_data.country
+    #                 form.instance.order_city = customer_data.city
+    #                 form.instance.order_zip_code = customer_data.zip_code
+    #                 form.instance.order_address1 = customer_data.address1
+    #                 form.instance.order_address2 = customer_data.address2
+    #                 form.instance.order_information = customer_data.information
+    #                 print('='*80)
+    #     print(form)
+    #     return form
 
     def form_valid(self, form):
         form.instance.order_status = 'created'

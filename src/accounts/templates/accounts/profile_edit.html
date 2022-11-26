@@ -1,4 +1,4 @@
-{% extends "base_conf.html" %}
+{% extends "accounts/profile_conf.html" %}
 {% load crispy_forms_tags %}
 {% load i18n %}
 {% block title %}
@@ -6,10 +6,10 @@
 {% endblock title %}
 
 {% block body %}
-        <h1> {% trans "Change data of a user" %} {{ user_name }}</h1>
+        <h1> {% trans "Change data of a user" %} '{{ object.username }}'</h1>
         <form method="post" action="">
             {% csrf_token %}
             {{ form|crispy }}
-            <input type="submit" value="{% trans 'Submit' %}" />
+            <input type="submit" value="{% trans 'Submit' %}">
         </form>
 {% endblock body %}

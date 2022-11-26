@@ -3,15 +3,22 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator
 
+STATUSES = [
+    ('created', 'Created'),
+    ('in_process', 'In Process'),
+    ('done', 'Processed and delivered'),
+    ('not_submitted', 'In doubt')
+]
+
 
 # Create your models here.
 class Book(models.Model):
     name = models.CharField(max_length=100)
     photo = models.ImageField(blank=True, null=True, upload_to='covers/%Y/%m/%d')
     price = models.DecimalField(decimal_places=2, max_digits=5, validators=[MinValueValidator(0.0)])
-    authors = models.ForeignKey('reference.Author', on_delete=models.PROTECT, related_name='book')
-    series = models.ForeignKey('reference.Serie', on_delete=models.PROTECT, related_name='book', blank=True, null=True)
-    genre = models.ForeignKey('reference.Genre', on_delete=models.PROTECT, related_name='book')
+    authors = models.ForeignKey('reference.Author', on_delete=models.PROTECT, related_name='books')
+    series = models.ForeignKey('reference.Serie', on_delete=models.PROTECT, related_name='books', blank=True, null=True)
+    genre = models.ForeignKey('reference.Genre', on_delete=models.PROTECT, related_name='books')
     publish_year = models.CharField(max_length=4, default=datetime.now().date().year)
     number_of_pages = models.IntegerField(validators=[MinValueValidator(1)])
     cover = models.CharField(max_length=20)
@@ -19,7 +26,7 @@ class Book(models.Model):
     ISBN = models.CharField(max_length=30)
     weight = models.IntegerField(validators=[MinValueValidator(1)])
     allowed_age = models.IntegerField(blank=True, null=True, default=0)
-    publisher = models.ForeignKey('reference.Publisher', on_delete=models.PROTECT, related_name='book')
+    publisher = models.ForeignKey('reference.Publisher', on_delete=models.PROTECT, related_name='books')
     available = models.IntegerField(validators=[MinValueValidator(0)])
     active = models.BooleanField(default='Yes')
     rate = models.IntegerField(blank=True, null=True, default=0, validators=[MinValueValidator(0)])
@@ -37,7 +44,7 @@ User_min_data = get_user_model()
 
 
 class Customer(models.Model):
-    user_data = models.OneToOneField(User_min_data, on_delete=models.PROTECT, related_name='customer')
+    user_data = models.OneToOneField(User_min_data, on_delete=models.PROTECT, related_name='customers')
     phone = models.CharField(max_length=20)
     country = models.CharField(max_length=20)
     city = models.CharField(max_length=20)
@@ -52,15 +59,15 @@ class Customer(models.Model):
     def __repr__(self):
         return f"{self.user_data.username:20} "
 
+    def group_names(self):
+        group_names = []
+        for group in self.user_data.groups.all().values('name'):
+            group_names.append(group['name'])
+        return group_names
+
 
 class Basket(models.Model):
-    STATUSES = [
-        ('created', 'Created'),
-        ('in_process', 'In Process'),
-        ('done', 'Processed and delivered'),
-        ('not_submitted', 'In doubt')
-    ]
-    customer = models.ForeignKey(User_min_data, on_delete=models.PROTECT, related_name='basket', blank=True, null=True)
+    customer = models.ForeignKey(User_min_data, on_delete=models.PROTECT, related_name='baskets', blank=True, null=True)
     order_status = models.CharField(max_length=20, choices=STATUSES, default='not_submitted')
     contact_phone = models.CharField(max_length=20, blank=True, null=True)
     order_country = models.CharField(max_length=20, blank=True, null=True)
@@ -73,14 +80,14 @@ class Basket(models.Model):
     updated = models.DateField(auto_now=True, auto_now_add=False)
 
     def total_price(self):
-        all_goods = self.goodsinbasket.all()
+        all_goods = self.goodsinbaskets.all()
         total_price = 0
         for goods in all_goods:
             total_price += goods.total_sum
         return total_price
 
     def total_books_number(self):
-        all_goods = self.goodsinbasket.all()
+        all_goods = self.goodsinbaskets.all()
         total_books = 0
         for goods in all_goods:
             total_books += goods.quantity
@@ -94,8 +101,8 @@ class Basket(models.Model):
 
 
 class GoodsInBasket(models.Model):
-    order = models.ForeignKey(Basket, on_delete=models.CASCADE, related_name='goodsinbasket')
-    article = models.ForeignKey(Book, on_delete=models.PROTECT, related_name='goodsinbasket')
+    order = models.ForeignKey(Basket, on_delete=models.CASCADE, related_name='goodsinbaskets')
+    article = models.ForeignKey(Book, on_delete=models.PROTECT, related_name='goodsinbaskets')
     quantity = models.IntegerField(validators=[MinValueValidator(1)])
     price = models.DecimalField(decimal_places=2, max_digits=5, validators=[MinValueValidator(0.0)])
     total_sum = models.DecimalField(decimal_places=2, max_digits=6, validators=[MinValueValidator(0.0)])

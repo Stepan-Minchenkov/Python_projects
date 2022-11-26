@@ -30,8 +30,10 @@ urlpatterns = [
          name='password_reset_complete'),
     path('registration/', user_views.Registration.as_view(), name='registration'),
     path('registration/fill', user_views.RegistrationFill.as_view(), name='registration_fill'),
+    path('profile/<int:pk>', user_views.Profile.as_view(), name='others_profile'),
     path('profile/', user_views.Profile.as_view(), name='profile'),
     path('profile/edit/<int:pk>', user_views.ProfileEdit.as_view(), name='profile_edit'),
-    path('profile/edit/fill/<int:pk>', user_views.ProfileEditFill.as_view(), name='profile_edit_fill'),
     path('profile/list', user_views.ProfileList.as_view(), name='profile_list'),
+    path('profile/list/customers', user_views.ProfileListCustomers.as_view(), name='profile_list_customers'),
+    path('profile/list/managers', user_views.ProfileListManagers.as_view(), name='profile_list_managers'),
 ]

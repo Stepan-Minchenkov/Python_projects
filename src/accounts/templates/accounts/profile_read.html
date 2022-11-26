@@ -1,0 +1,29 @@
+{% extends "accounts/profile_conf.html" %}
+{% load i18n %}
+{% block title %}
+{% trans " Profile " %}
+{% endblock title %}
+
+{% block body %}
+    <h1> {% trans "Your profile" %} </h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-auto">
+                <table border="1" class="table table-bordered table-striped-columns">
+                        <tr><th>{% trans "Login" %}</th><td>{{ object.username }}</td></tr>
+                        <tr><th>{% trans "Name" %}</th><td>{{ object.first_name }}</td></tr>
+                        <tr><th>{% trans "Surname" %}</th><td>{{ object.last_name }}</td></tr>
+                        <tr><th>{% trans "E-mail" %}</th><td>{{ object.email }}</td></tr>
+                        <tr><th>{% trans "Belongs to" %}</th><td>{{ object.customers.group_names }}</td></tr>
+                        <tr><th>{% trans "Phone" %}</th><td>{{ object.customers.phone }}</td></tr>
+                        <tr><th>{% trans "Country" %}</th><td>{{ object.customers.country }}</td></tr>
+                        <tr><th>{% trans "City" %}</th><td>{{ object.customers.city }}</td></tr>
+                        <tr><th>{% trans "Zip code" %}</th><td>{{ object.customers.zip_code }}</td></tr>
+                        <tr><th>{% trans "Address" %}</th><td>{{ object.customers.address1 }}</td></tr>
+                        <tr><th>{% trans "Address_extra" %}</th><td>{{ object.customers.address2 }}</td></tr>
+                        <tr><th>{% trans "Extra information" %}</th><td>{{ object.customers.information }}</td></tr>
+                </table><br>
+            </div>
+        </div>
+    </div>
+{% endblock body %}
