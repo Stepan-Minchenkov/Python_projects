@@ -62,6 +62,8 @@
             </div>
         </div>
     </div>
+    <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Go back</a>
+    <a href="{% url 'homepage' %}" class="btn btn-secondary">{% trans "Home" %}</a>
     {% if perms.bookstore.add_book %}
     <a href="{% url 'bookstore:book-create' %}"
        class="btn btn-primary">{% trans "Add book to the list" %}</a>
