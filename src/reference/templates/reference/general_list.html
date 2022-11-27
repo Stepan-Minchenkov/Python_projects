@@ -43,7 +43,9 @@
                             <td><a href="{% url ref_url_update pk=element.pk %}"
                                class="btn btn-info">{% trans "Update record " %}{{ element.pk }} </a></td>
                         {% endif %}
-                        <td width="20%"> {{ element.name }} </td>
+                        <td width="20%"><a class="nav-link active" style="text-decoration: underline"
+                               href="{% url 'bookstore:book-search-pk' fb=ref_type pk=element.pk %}">
+                                {{ element.name }}</a></td>
                         <td width="40%"> {{ element.description| default_if_none:'' }} </td>
                         {% if ref_type == 'genre' and perms.reference.delete_genre %}
                             <td><a href="{% url ref_url_delete pk=element.pk %}"

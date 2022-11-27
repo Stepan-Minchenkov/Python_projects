@@ -32,7 +32,9 @@
                             <i class="bi bi-arrow-right-square-fill"></i></a></td>
                         {% endif %}
                         <td> {{ author.name }} </td>
-                        <td> {{ author.surname }} </td>
+                        <td><a class="nav-link active" style="text-decoration: underline"
+                               href="{% url 'bookstore:book-search-pk' fb='author' pk=author.pk %}">
+                                {{ author.surname }}</a></td>
                         <td width="40%"> {{ author.description| default_if_none:'' }} </td>
                         {% if perms.reference.delete_author %}
                         <td><a href="{% url 'reference:author-delete' pk=author.pk %}"

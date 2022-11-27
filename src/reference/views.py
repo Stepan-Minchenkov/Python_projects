@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from django.views import generic
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from bookstore.models import Book
 from . import models, forms
 
 

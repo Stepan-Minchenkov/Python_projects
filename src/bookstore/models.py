@@ -27,7 +27,7 @@ class Book(models.Model):
     weight = models.IntegerField(validators=[MinValueValidator(1)])
     allowed_age = models.IntegerField(blank=True, null=True, default=0)
     publisher = models.ForeignKey('reference.Publisher', on_delete=models.PROTECT, related_name='books')
-    available = models.IntegerField(validators=[MinValueValidator(0)])
+    available = models.IntegerField(validators=[MinValueValidator(0)])  ###???
     active = models.BooleanField(default='Yes')
     rate = models.IntegerField(blank=True, null=True, default=0, validators=[MinValueValidator(0)])
     created = models.DateField(auto_now=False, auto_now_add=True)

@@ -24,4 +24,7 @@ urlpatterns = [
     path('orders-update/<int:pk>', bookstore_views.UpdateBasket.as_view(), name='orders-update'),
     path('orders-complete/<int:pk>', bookstore_views.BasketComplete.as_view(), name='orders-complete'),
     path('orders-complete/', bookstore_views.OrderCompleteDone.as_view(), name='orders-complete-done'),
+
+    path('books-search/<str:fb>/<int:pk>', bookstore_views.SearchResultPK.as_view(), name='book-search-pk'),
+    path('books-search/', bookstore_views.SearchResult.as_view(), name='book-search'),
 ]
