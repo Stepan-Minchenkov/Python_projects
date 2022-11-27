@@ -4,7 +4,9 @@ from django.views import generic
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from . import models, forms
+from django.db.models import Q
 from django.core.exceptions import PermissionDenied
+from reference.models import Author, Serie, Publisher, Genre
 
 
 # Create your views here.
@@ -84,7 +86,7 @@ class ShowBasket(generic.ListView):
         if self.request.user.is_authenticated:
             if self.request.user.has_perm("auth.manager") or \
                     self.request.user.has_perm("auth.admin"):
-                basket = models.Basket.objects.all().order_by("customer", "created")
+                basket = models.Basket.objects.all().order_by("order_status", "-created")
             elif self.request.user.has_perm("auth.registered_customer"):
                 customer = self.request.user
                 basket = models.Basket.objects.filter(customer=customer)
@@ -142,6 +144,27 @@ class UpdateBasket(generic.UpdateView):
         context = super().get_context_data(*args, **kwargs)
         self.request.session['update_basket_id'] = self.object.pk
         return context
+
+    def form_valid(self, form):
+        if self.request.user.has_perm("auth.manager") or \
+                self.request.user.has_perm("auth.admin"):
+            basket = models.Basket.objects.get(pk=form.instance.pk)
+            if basket.order_status == "created" and \
+                    form.instance.order_status == "in_process":
+                goods_in_basket = models.GoodsInBasket.objects.filter(order=form.instance.pk)
+                for goods in goods_in_basket:
+                    book = models.Book.objects.get(pk=goods.article.pk)
+                    book.available -= goods.quantity
+                    book.save()
+
+            if basket.order_status == "in_process" and \
+                    form.instance.order_status == "created":
+                goods_in_basket = models.GoodsInBasket.objects.filter(order=form.instance.pk)
+                for goods in goods_in_basket:
+                    book = models.Book.objects.get(pk=goods.article.pk)
+                    book.available += goods.quantity
+                    book.save()
+        return super().form_valid(form)
 
 
 class DeleteBasket(PermissionRequiredMixin, generic.DeleteView):
@@ -335,3 +358,80 @@ class BasketComplete(generic.UpdateView):
 
 class OrderCompleteDone(generic.TemplateView):
     template_name = "bookstore/orders_success.html"
+
+
+class SearchResult(View):
+    #   http://127.0.0.1:8000/bookstore/books
+    def get(self, request, *args, **kwargs):
+        context = {}
+        filterby = request.GET.get('filterby')
+        qfilter = request.GET.get('qfilter')
+        object_list = None
+        if filterby is None:
+            object_list = models.Book.objects.filter(
+                Q(name__icontains=qfilter) |
+                Q(authors__name__icontains=qfilter) | Q(authors__surname__icontains=qfilter) |
+                Q(series__name__icontains=qfilter) |
+                Q(genre__name__icontains=qfilter) |
+                Q(publisher__name__icontains=qfilter))
+
+        if filterby == 'book':
+            object_list = models.Book.objects.filter(
+                Q(name__icontains=qfilter))
+
+        if filterby == 'author':
+            object_list = models.Book.objects.filter(
+                Q(authors__name__icontains=qfilter) | Q(authors__surname__icontains=qfilter))
+
+        if filterby == 'series':
+            object_list = models.Book.objects.filter(
+                Q(series__name__icontains=qfilter))
+
+        if filterby == 'genre':
+            object_list = models.Book.objects.filter(
+                Q(genre__name__icontains=qfilter))
+
+        if filterby == 'publisher':
+            object_list = models.Book.objects.filter(
+                Q(publisher__name__icontains=qfilter))
+
+        filtered = " for '" + qfilter + "'"
+        if filterby:
+            filtered += ' in ' + filterby
+        context['object_list'] = object_list
+        context['filtered'] = filtered
+        return render(request, template_name='bookstore/book_list.html', context=context)
+
+
+class SearchResultPK(View):
+    #   http://127.0.0.1:8000/bookstore/books
+    def get(self, request, *args, **kwargs):
+        context = {}
+        filterbypk = kwargs['fb']
+        pk = kwargs['pk']
+        object_list = None
+        name = None
+        filtered = None
+
+        if filterbypk == 'author':
+            object_list = models.Book.objects.filter(authors__pk=pk)
+            author = Author.objects.get(pk=pk)
+            name = author.name + "  " + author.surname
+
+        if filterbypk == 'series':
+            object_list = models.Book.objects.filter(series__pk=pk)
+            name = Serie.objects.get(pk=pk).name
+
+        if filterbypk == 'genre':
+            object_list = models.Book.objects.filter(genre__pk=pk)
+            name = Genre.objects.get(pk=pk).name
+
+        if filterbypk == 'publisher':
+            object_list = models.Book.objects.filter(publisher__pk=pk)
+            name = Publisher.objects.get(pk=pk).name
+
+        if name:
+            filtered = " for " + filterbypk + " '" + name + "'"
+        context['object_list'] = object_list
+        context['filtered'] = filtered
+        return render(request, template_name='bookstore/book_list.html', context=context)

@@ -9,6 +9,7 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html',
                                                 next_page='homepage'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='accounts/logout.html'), name='logout'),
+
     path('password_change/done/',
          auth_views.PasswordChangeDoneView.as_view(template_name='accounts/password_reset_complete.html'),
          name='password_change_done'),
@@ -28,8 +29,10 @@ urlpatterns = [
     path('password_reset/complete/',
          auth_views.PasswordResetCompleteView.as_view(template_name='accounts/password_reset_complete.html'),
          name='password_reset_complete'),
+
     path('registration/', user_views.Registration.as_view(), name='registration'),
     path('registration/fill', user_views.RegistrationFill.as_view(), name='registration_fill'),
+
     path('profile/<int:pk>', user_views.Profile.as_view(), name='others_profile'),
     path('profile/', user_views.Profile.as_view(), name='profile'),
     path('profile/edit/<int:pk>', user_views.ProfileEdit.as_view(), name='profile_edit'),

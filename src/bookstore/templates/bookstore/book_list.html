@@ -1,11 +1,15 @@
 {% extends "base_conf.html" %}
 {% load i18n %}
 {% block title %}
-{% trans "All book" %}
+{% trans "All books" %}
 {% endblock title %}
 
 {% block body %}
-    <h1> {% trans "All books in database" %} </h1>
+    <h1> {% trans "All books in database" %}
+        {% if filtered %}
+            {{filtered}}
+        {% endif %}
+    </h1>
     <div class="container">
         <div class="row">
             <div class="col-md-auto">

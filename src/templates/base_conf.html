@@ -62,9 +62,35 @@
               </ul>
             </li>
           </ul>
-          <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <form class="d-flex" role="search" method="get" action="{% url 'bookstore:book-search' %}">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item dropdown">
+                <a class="nav-link active dropdown-toggle" href="" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Fiter
+                </a>
+                <ul class="dropdown-menu">
+                <form action="">
+                    <input type="radio" class="btn-check" name="filterby" id="option1" autocomplete="off"
+                           value="book" checked>
+                    <label class="btn btn-secondary" for="option1">Books</label><br>
+                    <input type="radio" class="btn-check" name="filterby" id="option2" autocomplete="off"
+                           value="author">
+                    <label class="btn btn-secondary" for="option2">Authors</label><br>
+                    <input type="radio" class="btn-check" name="filterby" id="option3" autocomplete="off"
+                           value="series">
+                    <label class="btn btn-secondary" for="option3">Series</label><br>
+                    <input type="radio" class="btn-check" name="filterby" id="option4" autocomplete="off"
+                           value="genre">
+                    <label class="btn btn-secondary" for="option4">Genres</label><br>
+                    <input type="radio" class="btn-check" name="filterby" id="option5" autocomplete="off"
+                           value="publisher">
+                    <label class="btn btn-secondary" for="option5">Publishers</label>
+                </form>
+                </ul>
+            </li>
+            <input class="form-control me-2" type="text" placeholder="Search" aria-label="Search" name='qfilter'>
             <button class="btn btn-outline-success" type="submit">Search</button>
+            </ul>
           </form>
         </div>
       </div>
