@@ -55,5 +55,45 @@
             </tbody>
         </table>
     </div>
-    <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Go back</a>
+    <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Go back</a><br>
+
+    <h3> {% trans "Comments for book" %}</h3><br>
+        <table border="1" class="table table-bordered table-striped-columns">
+            <thead>
+            <tr>
+                <th> {% trans "Name" %} </th>
+                <th> {% trans "Rate" %} </th>
+                <th> {% trans "Text" %} </th>
+                <th> {% trans "Created" %} </th>
+                <th> {% trans "Updated" %} </th>
+                {% if perms.auth.manager  or  perms.auth.admin %}
+                <td></td>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+                {% for element in book.sortedcomments %}
+                    <tr>
+                        <td>{{ element.customer.username }}</td>
+                        <td> {{ element.rate }}</td>
+                        <td> {{ element.comment_text }} </td>
+                        <td> {{ element.created }} </td>
+                        <td> {{ element.updated }} </td>
+                        {% if perms.auth.manager  or  perms.auth.admin %}
+                        <td><a href="{% url 'bookstore:bookcomments-update' pk=element.pk %}"
+                               class="btn btn-secondary">
+                            <i class="bi bi-arrow-right-square-fill"></i></a>
+                            <a href="{% url 'bookstore:bookcomments-delete' pk=element.pk %}"
+                               class="btn btn-danger">
+                            <i class="bi bi-x-square-fill"></i></a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+            <tbody>
+        </table>
+    {% if perms.auth.manager  or  perms.auth.admin or perms.auth.registered_customer %}
+    <a href="{% url 'bookstore:bookcomments-create' bookpk=object.pk %}"
+            class="btn btn-secondary">{% trans "Add comment" %}</a>
+    {% endif %}
 {% endblock body %}

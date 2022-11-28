@@ -1,0 +1,21 @@
+{% extends "base_conf.html" %}
+{% load i18n %}
+{% block title %}
+{% trans "Delete comment" %}
+{% endblock title %}
+
+{% block body %}
+    {% if perms.reference.delete_basketcomments %}
+    <h1> {% trans "Delete existed comment from the order" %}</h1>
+    <form action="" method="post">
+        {% csrf_token %}
+        <h3> {% trans "Order" %}:      {{ object.basket }}<br>
+             {% trans "Rate" %}:     {{ object.rate }}<br>
+             {% trans "Text" %}: {{ object.comment_text }}
+        </h3>
+        <input type="submit" class="btn btn-success" value="{% trans 'Confirm' %}">
+    </form>
+    {% else %}
+    <h1> {% trans "You have not rights to delete data" %} </h1>
+    {% endif %}
+{% endblock body %}

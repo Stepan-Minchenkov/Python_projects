@@ -73,3 +73,21 @@ class BasketForm(forms.ModelForm):
         elif not self.request.user.has_perm("auth.manager") \
                 and not self.request.user.has_perm("auth.admin"):
             del self.fields['order_status']
+
+
+class BasketCommentsForm(forms.ModelForm):
+    class Meta:
+        model = models.BasketComments
+        # fields = '__all__'
+        fields = [
+            'rate',
+            'comment_text']
+
+
+class BookCommentsForm(forms.ModelForm):
+    class Meta:
+        model = models.BookComments
+        # fields = '__all__'
+        fields = [
+            'rate',
+            'comment_text']

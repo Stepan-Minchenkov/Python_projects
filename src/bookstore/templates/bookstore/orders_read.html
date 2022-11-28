@@ -52,13 +52,53 @@
     </div>
     {% if perms.auth.manager  or  perms.auth.admin %}
         <a href="{% url 'bookstore:orders-update' pk=basket.pk %}"
-           class="btn btn-secondary">{% trans "Update" %}</a>
-    {% else %}
+           class="btn btn-secondary">{% trans "Update order" %}</a>
+    {% elif perms.auth.registered_customer %}
         {% if object.order_status == 'not_submitted' or object.order_status == 'created' %}
             <a href="{% url 'bookstore:orders-update' pk=basket.pk %}"
-            class="btn btn-secondary">{% trans "Update" %}</a>
+            class="btn btn-secondary">{% trans "Update order" %}</a>
         {% endif %}
     {% endif %}
     <a href="{% url 'bookstore:orders-show' %}" class="btn btn-secondary">{% trans "Back to the list of orders" %}</a>
-    <a href="{% url 'homepage' %}" class="btn btn-secondary">{% trans "Home" %}</a>
+    <a href="{% url 'homepage' %}" class="btn btn-secondary">{% trans "Home" %}</a><br>
+
+    <h3> {% trans "Comments for order" %}</h3><br>
+        <table border="1" class="table table-bordered table-striped-columns">
+            <thead>
+            <tr>
+                <th> {% trans "Name" %} </th>
+                <th> {% trans "Rate" %} </th>
+                <th> {% trans "Text" %} </th>
+                <th> {% trans "Created" %} </th>
+                <th> {% trans "Updated" %} </th>
+                {% if perms.auth.manager  or  perms.auth.admin %}
+                <td></td>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+                {% for element in basket.sortedcomments %}
+                    <tr>
+                        <td>{{ element.customer.username }}</td>
+                        <td> {{ element.rate }}</td>
+                        <td> {{ element.comment_text }} </td>
+                        <td> {{ element.created }} </td>
+                        <td> {{ element.updated }} </td>
+                        {% if perms.auth.manager  or  perms.auth.admin %}
+                        <td><a href="{% url 'bookstore:ordercomments-update' pk=element.pk %}"
+                               class="btn btn-secondary">
+                            <i class="bi bi-arrow-right-square-fill"></i></a>
+                            <a href="{% url 'bookstore:ordercomments-delete' pk=element.pk %}"
+                               class="btn btn-danger">
+                            <i class="bi bi-x-square-fill"></i></a>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+            <tbody>
+        </table>
+    {% if perms.auth.manager  or  perms.auth.admin or perms.auth.registered_customer %}
+    <a href="{% url 'bookstore:ordercomments-create' basketpk=basket.pk %}"
+            class="btn btn-secondary">{% trans "Add comment" %}</a>
+    {% endif %}
 {% endblock body %}

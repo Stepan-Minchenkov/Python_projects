@@ -27,4 +27,14 @@ urlpatterns = [
 
     path('books-search/<str:fb>/<int:pk>', bookstore_views.SearchResultPK.as_view(), name='book-search-pk'),
     path('books-search/', bookstore_views.SearchResult.as_view(), name='book-search'),
+
+    path('ordercomments-create/<int:basketpk>', bookstore_views.CreateBasketComments.as_view(),
+         name='ordercomments-create'),
+    path('ordercomments-delete/<int:pk>', bookstore_views.DeleteBasketComments.as_view(), name='ordercomments-delete'),
+    path('ordercomments-update/<int:pk>', bookstore_views.UpdateBasketComments.as_view(), name='ordercomments-update'),
+
+    path('bookcomments-create/<int:bookpk>', bookstore_views.CreateBookComments.as_view(),
+         name='bookcomments-create'),
+    path('bookcomments-delete/<int:pk>', bookstore_views.DeleteBookComments.as_view(), name='bookcomments-delete'),
+    path('bookcomments-update/<int:pk>', bookstore_views.UpdateBookComments.as_view(), name='bookcomments-update'),
 ]
