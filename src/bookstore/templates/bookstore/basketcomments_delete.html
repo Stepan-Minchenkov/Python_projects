@@ -5,7 +5,7 @@
 {% endblock title %}
 
 {% block body %}
-    {% if perms.reference.delete_basketcomments %}
+    {% if perms.bookstore.delete_basketcomments %}
     <h1> {% trans "Delete existed comment from the order" %}</h1>
     <form action="" method="post">
         {% csrf_token %}
