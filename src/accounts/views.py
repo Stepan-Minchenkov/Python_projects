@@ -129,7 +129,7 @@ class Profile(DetailView):
 
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
-        if self.kwargs["pk"] is None:
+        if self.kwargs.get("pk") is None:
             userid = request.user.id
             if userid is not None:
                 self.kwargs["pk"] = userid
@@ -171,6 +171,7 @@ class ProfileEdit(PermissionRequiredMixin, UpdateView):
             'last_name': object_temp.last_name,
             'phone': customer.phone,
         })
+        # context['form'] = forms.ChangeProfileForm(instance=object_temp)
         return context
 
     def form_valid(self, form):

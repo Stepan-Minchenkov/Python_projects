@@ -435,3 +435,113 @@ class SearchResultPK(View):
         context['object_list'] = object_list
         context['filtered'] = filtered
         return render(request, template_name='bookstore/book_list.html', context=context)
+
+
+# CRUD BasketComments:
+class CreateBasketComments(PermissionRequiredMixin, generic.CreateView):
+    #   http://127.0.0.1:8000/bookstore/basketcomments-create
+    permission_required = 'bookstore.add_basketcomments'
+    model = models.BasketComments
+    form_class = forms.BasketCommentsForm
+    template_name = 'bookstore/basketcomments_create.html'
+
+    def form_valid(self, form):
+        basket_pk = self.kwargs.get('basketpk')
+        form.instance.basket = models.Basket.objects.get(pk=basket_pk)
+        form.instance.customer = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('bookstore:orders-detail', kwargs={'pk': self.object.basket.pk})
+
+
+class UpdateBasketComments(PermissionRequiredMixin, generic.UpdateView):
+    #   http://127.0.0.1:8000/bookstore/basketcomments-update/7
+    permission_required = 'bookstore.change_basketcomments'
+    model = models.BasketComments
+    form_class = forms.BasketCommentsForm
+    template_name = 'bookstore/basketcomments_update.html'
+
+    def get_success_url(self):
+        return reverse_lazy('bookstore:orders-detail', kwargs={'pk': self.object.basket.pk})
+
+
+class DeleteBasketComments(PermissionRequiredMixin, generic.DeleteView):
+    #   http://127.0.0.1:8000/bookstore/basketcomments-delete/7
+    permission_required = 'bookstore.delete_basketcomments'
+    model = models.BasketComments
+    template_name = 'bookstore/basketcomments_delete.html'
+
+    def get_success_url(self):
+        return reverse_lazy('bookstore:orders-detail', kwargs={'pk': self.object.basket.pk})
+
+
+# CRUD BookComments:
+class CreateBookComments(PermissionRequiredMixin, generic.CreateView):
+    #   http://127.0.0.1:8000/bookstore/bookcomments-create
+    permission_required = 'bookstore.add_bookcomments'
+    model = models.BookComments
+    form_class = forms.BookCommentsForm
+    template_name = 'bookstore/bookcomments_create.html'
+
+    def form_valid(self, form):
+        book_pk = self.kwargs.get('bookpk')
+        book = models.Book.objects.get(pk=book_pk)
+        form.instance.book = book
+        form.instance.customer = self.request.user
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        book = models.Book.objects.get(pk=self.object.book.pk)
+        book.rate = book.averagerate()
+        book.save()
+        return reverse_lazy('bookstore:book-detail', kwargs={'pk': self.object.book.pk})
+
+
+class UpdateBookComments(PermissionRequiredMixin, generic.UpdateView):
+    #   http://127.0.0.1:8000/bookstore/bookcomments-update/7
+    permission_required = 'bookstore.change_bookcomments'
+    model = models.BookComments
+    form_class = forms.BookCommentsForm
+    template_name = 'bookstore/bookcomments_update.html'
+
+    # def form_valid(self, form):
+    #     book = models.Book.objects.get(pk=self.object.book.pk)
+    #     book.rate = book.averagerate
+    #     book.save()
+    #     return super().form_valid(form)
+
+    def get_success_url(self):
+        book = models.Book.objects.get(pk=self.object.book.pk)
+        # print(book.rate)
+        book.rate = book.averagerate()
+        # print(book.rate)
+        book.save()
+        return reverse_lazy('bookstore:book-detail', kwargs={'pk': self.object.book.pk})
+
+
+class DeleteBookComments(PermissionRequiredMixin, generic.DeleteView):
+    #   http://127.0.0.1:8000/bookstore/bookcomments-delete/7
+    permission_required = 'bookstore.delete_bookcomments'
+    model = models.BookComments
+    template_name = 'bookstore/bookcomments_delete.html'
+
+    def get_success_url(self):
+        # book = models.Book.objects.get(pk=self.object.book.pk)
+        # book.rate = book.averagerate()
+        # book.save()
+        return reverse_lazy('bookstore:book-detail', kwargs={'pk': self.object.book.pk})
+
+    def delete(self, request, *args, **kwargs):
+        book = models.Book.objects.get(pk=self.object.book.pk)
+        answer = super().delete(self, request, *args, **kwargs)
+        book.averagerate()
+        return answer
+
+    # def form_valid(self, form):
+    #     self.object.delete()
+    #     book = models.Book.objects.get(pk=self.object.book.pk)
+    #     book.rate = book.averagerate()
+    #     book.save()
+    #     return super().form_valid(form)
+

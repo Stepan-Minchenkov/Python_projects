@@ -42,7 +42,9 @@ permissions = Permission.objects.filter(codename__in=(
     "add_genre", "change_genre", "delete_genre", "view_genre",
     "add_publisher", "change_publisher", "delete_publisher", "view_publisher",
     "add_serie", "change_serie", "delete_serie", "view_serie",
-    "add_session", "change_session", "delete_session", "view_session"
+    "add_session", "change_session", "delete_session", "view_session",
+    "add_basketcomments", "change_basketcomments", "delete_basketcomments", "view_basketcomments",
+    "add_bookcomments", "change_bookcomments", "delete_bookcomments", "view_bookcomments"
                                         ))
 group = Group.objects.get(name='Admin')
 for permission in permissions:
@@ -58,7 +60,9 @@ permissions = Permission.objects.filter(codename__in=(
     "add_author", "change_author", "delete_author", "view_author",
     "add_genre", "change_genre", "delete_genre", "view_genre",
     "add_publisher", "change_publisher", "delete_publisher", "view_publisher",
-    "add_serie", "change_serie", "delete_serie", "view_serie"
+    "add_serie", "change_serie", "delete_serie", "view_serie",
+    "add_basketcomments", "change_basketcomments", "delete_basketcomments", "view_basketcomments",
+    "add_bookcomments", "change_bookcomments", "delete_bookcomments", "view_bookcomments"
                                         ))
 group = Group.objects.get(name='Managers')
 for permission in permissions:
@@ -74,7 +78,9 @@ permissions = Permission.objects.filter(codename__in=(
     "view_author",
     "view_genre",
     "view_publisher",
-    "view_serie"
+    "view_serie",
+    "add_basketcomments", "view_basketcomments",
+    "add_bookcomments", "view_bookcomments"
                                         ))
 group = Group.objects.get(name='Customers')
 for permission in permissions:
