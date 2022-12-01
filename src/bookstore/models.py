@@ -14,6 +14,7 @@ STATUSES = [
 RATE = [(0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4'),
         (5, '5'), (6, '6'), (7, '7'), (8, '8'), (9, '9'),  (10, '10')]
 
+
 # Create your models here.
 class Book(models.Model):
     name = models.CharField(_("name"), max_length=100)
@@ -45,7 +46,7 @@ class Book(models.Model):
 
     def averagerate(self):
         all_comments = self.bookcomments.all()
-        print(all_comments)
+        # print(all_comments)
         rate = 0
         for comment in all_comments:
             rate += comment.rate
@@ -166,4 +167,3 @@ class BookComments(models.Model):
 
     def __str__(self):
         return str(self.pk)
-

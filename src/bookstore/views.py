@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views import View
 from django.views import generic
 from django.urls import reverse_lazy
+from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from . import models, forms
 from django.db.models import Q
@@ -292,6 +293,28 @@ class DeleteGoodsInBasket(generic.DeleteView):
         else:
             return reverse_lazy('bookstore:goodsinbasket-create')
 
+    def form_valid(self, form):
+        form_object = super().form_valid(form)
+
+        update_basket_id = int(self.request.session.get('update_basket_id', 0))
+        if update_basket_id:
+            basket = models.Basket.objects.get(pk=update_basket_id)
+            if len(basket.goodsinbaskets.all()) == 0:
+                basket.delete()
+                del self.request.session['update_basket_id']
+                success_url = reverse_lazy('bookstore:orders-show')
+                return HttpResponseRedirect(success_url)
+
+        basket_id = int(self.request.session.get('basket_pk', 0))
+        if basket_id:
+            basket = models.Basket.objects.get(pk=basket_id)
+            if len(basket.goodsinbaskets.all()) == 0:
+                basket.delete()
+                del self.request.session['basket_pk']
+                success_url = reverse_lazy('bookstore:book-show')
+                return HttpResponseRedirect(success_url)
+        return form_object
+
 
 class BasketComplete(generic.UpdateView):
     #   http://127.0.0.1:8000/bookstore/orders-complete
@@ -505,17 +528,9 @@ class UpdateBookComments(PermissionRequiredMixin, generic.UpdateView):
     form_class = forms.BookCommentsForm
     template_name = 'bookstore/bookcomments_update.html'
 
-    # def form_valid(self, form):
-    #     book = models.Book.objects.get(pk=self.object.book.pk)
-    #     book.rate = book.averagerate
-    #     book.save()
-    #     return super().form_valid(form)
-
     def get_success_url(self):
         book = models.Book.objects.get(pk=self.object.book.pk)
-        # print(book.rate)
         book.rate = book.averagerate()
-        # print(book.rate)
         book.save()
         return reverse_lazy('bookstore:book-detail', kwargs={'pk': self.object.book.pk})
 
@@ -527,21 +542,19 @@ class DeleteBookComments(PermissionRequiredMixin, generic.DeleteView):
     template_name = 'bookstore/bookcomments_delete.html'
 
     def get_success_url(self):
-        # book = models.Book.objects.get(pk=self.object.book.pk)
-        # book.rate = book.averagerate()
-        # book.save()
         return reverse_lazy('bookstore:book-detail', kwargs={'pk': self.object.book.pk})
 
-    def delete(self, request, *args, **kwargs):
-        book = models.Book.objects.get(pk=self.object.book.pk)
-        answer = super().delete(self, request, *args, **kwargs)
-        book.averagerate()
-        return answer
-
-    # def form_valid(self, form):
-    #     self.object.delete()
+    # def delete(self, request, *args, **kwargs):
     #     book = models.Book.objects.get(pk=self.object.book.pk)
-    #     book.rate = book.averagerate()
-    #     book.save()
-    #     return super().form_valid(form)
+    #     print('delete')
+    #     answer = super().delete(self, request, *args, **kwargs)
+    #     print('here')
+    #     self.object.commit()
+    #     book.averagerate()
+    #     return answer
 
+    def form_valid(self, form):
+        book = models.Book.objects.get(pk=self.object.book.pk)
+        form_object = super().form_valid(form)
+        book.averagerate()
+        return form_object

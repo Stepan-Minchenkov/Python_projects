@@ -165,13 +165,13 @@ class ProfileEdit(PermissionRequiredMixin, UpdateView):
         )
         object_temp = context.get('object')
         del context['form']
-        context['form'] = forms.ChangeProfileForm(data={
-            'email': object_temp.email,
-            'first_name': object_temp.first_name,
-            'last_name': object_temp.last_name,
-            'phone': customer.phone,
-        })
-        # context['form'] = forms.ChangeProfileForm(instance=object_temp)
+        # context['form'] = forms.ChangeProfileForm(data={
+        #     'email': object_temp.email,
+        #     'first_name': object_temp.first_name,
+        #     'last_name': object_temp.last_name,
+        #     'phone': customer.phone,
+        # })
+        context['form'] = forms.ChangeProfileForm(instance=object_temp)
         return context
 
     def form_valid(self, form):
