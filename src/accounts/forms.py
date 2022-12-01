@@ -46,16 +46,12 @@ class ChangeProfileForm(forms.ModelForm):
             'last_name',
             'phone']
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     user = User.objects.get(username=self.instance.username)
-    #     customer = Customer.objects.get(user_data=user.id)
-    #     print(Customer.objects.filter(user_data=user.id).values('phone'))
-    #     print(self.fields['phone'].get_bound_field(self, 'phone'))
-    #     # self.fields['phone'].value  = Customer.objects.filter(user_data=user.id).values('phone')
-    #     self.fields['phone'].value = customer.phone
-    #     self.fields['first_name'].value = "DFFFF"
-    #     # self.fields['first_name'].queryset = 'DFFFF'
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        user = User.objects.get(username=self.instance.username)
+        customer = Customer.objects.get(user_data=user.id)
+        # print(self.fields['phone'].get_bound_field(self, 'phone'))
+        self.fields['phone'].initial = customer.phone
     #     print(self.fields)
     #     print(self.fields['phone'].get_bound_field(self, 'phone'))
     #     print(self.fields['phone'].get_bound_field(self, 'first_name'))
