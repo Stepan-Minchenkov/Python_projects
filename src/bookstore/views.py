@@ -8,6 +8,13 @@ from . import models, forms
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from reference.models import Author, Serie, Publisher, Genre
+from django.core.mail import EmailMultiAlternatives
+from django.template import loader
+from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth import get_user_model
+from django.core.paginator import Paginator
+
+User = get_user_model()
 
 
 # Create your views here.
@@ -16,6 +23,7 @@ class ShowBook(generic.ListView):
     #   http://127.0.0.1:8000/bookstore/books
     model = models.Book
     template_name = 'bookstore/book_list.html'
+    paginate_by = 4
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -79,10 +87,14 @@ class ShowBasket(generic.ListView):
     #   http://127.0.0.1:8000/bookstore/orders
     model = models.Basket
     template_name = 'bookstore/orders_list.html'
+    paginate_by = 5
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        basket = None
+        return context
+
+    def get_queryset(self):
+        basket = ''
 
         if self.request.user.is_authenticated:
             if self.request.user.has_perm("auth.manager") or \
@@ -90,10 +102,8 @@ class ShowBasket(generic.ListView):
                 basket = models.Basket.objects.all().order_by("order_status", "-created")
             elif self.request.user.has_perm("auth.registered_customer"):
                 customer = self.request.user
-                basket = models.Basket.objects.filter(customer=customer)
-
-        context['basket'] = basket
-        return context
+                basket = models.Basket.objects.filter(customer=customer).order_by("order_status", "-created")
+        return basket
 
 
 class ReadBasket(generic.DetailView):
@@ -181,7 +191,7 @@ class DeleteBasket(PermissionRequiredMixin, generic.DeleteView):
 
 
 # CRUDl GoodsInBasket:
-class ShowGoodsInBasket(generic.ListView):
+class ShowGoodsInBasket(generic.ListView):  # not used for now
     #   http://127.0.0.1:8000/bookstore/goodsinbasket/
     model = models.GoodsInBasket
     template_name = 'bookstore/goodsinbasket_list.html'
@@ -198,7 +208,12 @@ class ShowGoodsInBasket(generic.ListView):
             customer = self.request.user
             basket = models.Basket.objects.get(customer=customer)
 
+        paginator = Paginator(basket.goodsinbaskets.all().order_by('name'), 3)  # Show 3 goods per page.
+
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
         context['basket'] = basket
+        context['page_obj'] = page_obj
         return render(request, template_name='bookstore/goodsinbasket_list.html', context=context)
 
 
@@ -333,49 +348,83 @@ class BasketComplete(generic.UpdateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        basket_id = int(self.request.session.get('basket_pk', 0))
-
-        if basket_id:
-            basket = models.Basket.objects.get(pk=basket_id)
-            if basket.customer:
-                customer_data = models.Customer.objects.filter(user_data=basket.customer.id)
-                if customer_data:
-                    customer_data = models.Customer.objects.get(user_data=basket.customer.id)
-                    object_temp = context.get('object')
-                    object_temp.contact_phone = customer_data.phone
-                    object_temp.order_country = customer_data.country
-                    object_temp.order_city = customer_data.city
-                    object_temp.order_zip_code = customer_data.zip_code
-                    object_temp.order_address1 = customer_data.address1
-                    object_temp.order_address2 = customer_data.address2
-                    object_temp.order_information = customer_data.information
-                    del context['form']
-                    context['form'] = forms.BasketForm(instance=object_temp, request=self.request)
+        # basket_id = int(self.request.session.get('basket_pk', 0))
+        #
+        # if basket_id:
+        #     basket = models.Basket.objects.get(pk=basket_id)
+        #     if basket.customer:
+        #         customer_data = models.Customer.objects.filter(user_data=basket.customer.id)
+        #         if customer_data:
+        #             customer_data = models.Customer.objects.get(user_data=basket.customer.id)
+        #             object_temp = context.get('object')
+        #             object_temp.contact_phone = customer_data.phone
+        #             object_temp.order_country = customer_data.country
+        #             object_temp.order_city = customer_data.city
+        #             object_temp.order_zip_code = customer_data.zip_code
+        #             object_temp.order_address1 = customer_data.address1
+        #             object_temp.order_address2 = customer_data.address2
+        #             object_temp.order_information = customer_data.information
+        #             del context['form']
+        #             context['form'] = forms.BasketForm(instance=object_temp, request=self.request)
         return context
 
-    # def get_form(self, *args, **kwargs):
-    #     form = super().get_form(*args, **kwargs)
-    #     basket_id = int(self.request.session.get('basket_pk', 0))
-    #     print(form)
-    #     if basket_id:
-    #         basket = models.Basket.objects.get(pk=basket_id)
-    #         if basket.customer:
-    #             customer_data = models.Customer.objects.filter(user_data=basket.customer.id)
-    #             if customer_data:
-    #                 customer_data = models.Customer.objects.get(user_data=basket.customer.id)
-    #                 form.instance.contact_phone = customer_data.phone
-    #                 form.instance.order_country = customer_data.country
-    #                 form.instance.order_city = customer_data.city
-    #                 form.instance.order_zip_code = customer_data.zip_code
-    #                 form.instance.order_address1 = customer_data.address1
-    #                 form.instance.order_address2 = customer_data.address2
-    #                 form.instance.order_information = customer_data.information
-    #                 print('='*80)
-    #     print(form)
-    #     return form
+    def send_mail(
+            self,
+            subject_template_name,
+            email_template_name,
+            context,
+            from_email,
+            to_email,
+            request,
+            html_email_template_name=None,
+    ):
+        """
+        Send a django.core.mail.EmailMultiAlternatives to `to_email`.
+        """
+        # print("11")
+        # print(context)
+        subject = loader.render_to_string(subject_template_name, context, request)
+        # Email subject *must not* contain newlines
+        subject = "".join(subject.splitlines())
+        # print("22")
+        # print(context)
+        body = loader.render_to_string(email_template_name, context, request)  ##  why tag is called here????
+        # print("33")
+        # print(context)
+        email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
+        if html_email_template_name is not None:
+            html_email = loader.render_to_string(html_email_template_name, context)
+            email_message.attach_alternative(html_email, "text/html")
+        # print("44")
+        # print(context)
+        email_message.send()
+        # print("55")
+        # print(context)
 
     def form_valid(self, form):
         form.instance.order_status = 'created'
+        subject_template_name = "bookstore/order_email_subject.txt"
+        email_template_name = "bookstore/order_email_body.html"
+        from_email = None
+        to_email = ''
+        for user in User.objects.filter(Q(groups__name="Managers")):
+            to_email += user.email + ','
+        local_context = {}
+        current_site = get_current_site(self.request)
+        domain = current_site.domain
+        local_context['order_pk'] = form.instance.pk
+        if self.request.is_secure():
+            local_context['protocol'] = "https"
+        else:
+            local_context['protocol'] = "http"
+        local_context['domain'] = domain
+        self.send_mail(
+            subject_template_name,
+            email_template_name,
+            local_context,
+            from_email,
+            to_email,
+            self.request)
         return super().form_valid(form)
 
 
@@ -384,11 +433,24 @@ class OrderCompleteDone(generic.TemplateView):
 
 
 class SearchResult(View):
-    #   http://127.0.0.1:8000/bookstore/books
+    #   http://127.0.0.1:8000/bookstore/books-search/?filterby=author&qfilter=ag
     def get(self, request, *args, **kwargs):
         context = {}
+        # from django.contrib.sessions.models import Session
+        # from django.contrib.sessions.backends.db import SessionStore
+        # for ss in Session.objects.all():
+        #     print(SessionStore().decode(ss.session_data))
         filterby = request.GET.get('filterby')
         qfilter = request.GET.get('qfilter')
+
+        if filterby:
+            self.request.session['filterby'] = filterby
+        else:
+            filterby = self.request.session.get('filterby')
+        if qfilter:
+            self.request.session['qfilter'] = qfilter
+        else:
+            qfilter = self.request.session.get('qfilter')
         object_list = None
         if filterby is None:
             object_list = models.Book.objects.filter(
@@ -421,13 +483,18 @@ class SearchResult(View):
         filtered = " for '" + qfilter + "'"
         if filterby:
             filtered += ' in ' + filterby
-        context['object_list'] = object_list
+        paginator = Paginator(object_list.order_by("name"), 3)  # Show 3 books per page.
+
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        context['object_list'] = page_obj
+        context['page_obj'] = page_obj
         context['filtered'] = filtered
         return render(request, template_name='bookstore/book_list.html', context=context)
 
 
 class SearchResultPK(View):
-    #   http://127.0.0.1:8000/bookstore/books
+    #   http://127.0.0.1:8000/bookstore/books-search/series/1
     def get(self, request, *args, **kwargs):
         context = {}
         filterbypk = kwargs['fb']
@@ -455,13 +522,18 @@ class SearchResultPK(View):
 
         if name:
             filtered = " for " + filterbypk + " '" + name + "'"
-        context['object_list'] = object_list
+        paginator = Paginator(object_list.order_by("name"), 3)  # Show 3 books per page.
+
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        context['object_list'] = page_obj
+        context['page_obj'] = page_obj
         context['filtered'] = filtered
         return render(request, template_name='bookstore/book_list.html', context=context)
 
 
 # CRUD BasketComments:
-class CreateBasketComments(PermissionRequiredMixin, generic.CreateView):
+class CreateBasketComments(PermissionRequiredMixin, generic.CreateView):  # not used for now
     #   http://127.0.0.1:8000/bookstore/basketcomments-create
     permission_required = 'bookstore.add_basketcomments'
     model = models.BasketComments
