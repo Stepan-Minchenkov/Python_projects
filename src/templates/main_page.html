@@ -7,15 +7,17 @@ Main page
       user = admin, Password =Vbyxtyrjd_C70  [for administation portal]<br>
       user = First, Password =first1234  [group Managers]<br>
       user = Second, Password =second1234  [group Customers]<br>
+      user = Third, Password =third1234  [group Admin]<br>
+      user = Fourth, Password =fourth1234  [group Managers]<br>
     {% csrf_token %}
     <div class="container">
         <div class="row">
             {% for element in object_list %}
                 <div class="card" style="width: 14rem;">
                   {% if element.photo %}
-                    <img src="{{ element.photo.url }}" class="card-img-top" alt="..." width="100" height="300">
+                    <img src="{{ element.photo.url }}" class="card-img-top" alt="..." width="100" height="250">
                   {% else %}
-                    <img src="" class="card-img-top" alt="..."  width="100" height="300">
+                    <img src="" class="card-img-top" alt="..."  width="100" height="250">
                   {% endif%}
                   <div class="card-body">
                     <h5 class="card-title">{{ element.name }}</h5>

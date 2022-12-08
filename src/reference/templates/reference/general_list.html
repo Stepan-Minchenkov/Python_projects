@@ -35,18 +35,18 @@
                     <tr>
                         {% if ref_type == 'genre' and perms.reference.change_genre %}
                             <td><a href="{% url ref_url_update pk=element.pk %}"
-                               class="btn btn-info">{% trans "Update record " %}{{ element.pk }} </a></td>
+                               class="btn btn-info">{% trans "Update" %}</a></td>
                         {% elif ref_type == 'series' and perms.reference.change_serie %}
                             <td><a href="{% url ref_url_update pk=element.pk %}"
-                               class="btn btn-info">{% trans "Update record " %}{{ element.pk }} </a></td>
+                               class="btn btn-info">{% trans "Update" %} </a></td>
                         {% elif ref_type == 'publisher' and perms.reference.change_publisher %}
                             <td><a href="{% url ref_url_update pk=element.pk %}"
-                               class="btn btn-info">{% trans "Update record " %}{{ element.pk }} </a></td>
+                               class="btn btn-info">{% trans "Update" %}</a></td>
                         {% endif %}
-                        <td width="20%"><a class="nav-link active" style="text-decoration: underline"
+                        <td width="30%"><a class="nav-link active" style="text-decoration: underline"
                                href="{% url 'bookstore:book-search-pk' fb=ref_type pk=element.pk %}">
                                 {{ element.name }}</a></td>
-                        <td width="40%"> {{ element.description| default_if_none:'' }} </td>
+                        <td width="50%"> {{ element.description| default_if_none:'' }} </td>
                         {% if ref_type == 'genre' and perms.reference.delete_genre %}
                             <td><a href="{% url ref_url_delete pk=element.pk %}"
                                 class="btn btn-danger">{% trans "DELETE" %}</a></td>
@@ -60,7 +60,25 @@
                     </tr>
                     {% endfor %}
                     </tbody>
-                </table><br>
+                </table>
+                Total number: {{ page_obj.paginator.count }}
+                <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+                </div>
             </div>
         </div>
     </div>

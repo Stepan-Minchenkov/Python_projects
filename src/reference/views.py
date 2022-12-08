@@ -1,5 +1,3 @@
-from django.shortcuts import render
-from django.http import HttpResponse
 from django.views import generic
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -12,6 +10,7 @@ class ShowAuthors(generic.ListView):
     #   http://127.0.0.1:8000/ref/author
     model = models.Author
     template_name = 'reference/author_list.html'
+    paginate_by = 10
 
 
 class CreateAuthor(PermissionRequiredMixin, generic.CreateView):
@@ -58,6 +57,7 @@ class ShowSerie(generic.ListView):
     #   http://127.0.0.1:8000/ref/series
     model = models.Serie
     template_name = 'reference/general_list.html'
+    paginate_by = 10
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -132,6 +132,7 @@ class ShowGenre(generic.ListView):
     #   http://127.0.0.1:8000/ref/genre
     model = models.Genre
     template_name = 'reference/general_list.html'
+    paginate_by = 10
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
@@ -206,6 +207,7 @@ class ShowPublisher(generic.ListView):
     #   http://127.0.0.1:8000/ref/publish
     model = models.Publisher
     template_name = 'reference/general_list.html'
+    paginate_by = 10
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)

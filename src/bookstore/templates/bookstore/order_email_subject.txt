@@ -1,0 +1,3 @@
+{% load i18n %}{% autoescape off %}
+{% blocktranslate %}New order {{ order_pk }} is created {% endblocktranslate %}
+{% endautoescape %}

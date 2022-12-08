@@ -74,6 +74,21 @@ class BasketForm(forms.ModelForm):
                 and not self.request.user.has_perm("auth.admin"):
             del self.fields['order_status']
 
+        basket_id = int(self.request.session.get('basket_pk', 0))
+        if basket_id:
+            basket = models.Basket.objects.get(pk=basket_id)
+            if basket.customer:
+                customer_data = models.Customer.objects.filter(user_data=basket.customer.id)
+                if customer_data:
+                    customer_data = models.Customer.objects.get(user_data=basket.customer.id)
+                    self.initial['contact_phone'] = customer_data.phone
+                    self.initial['order_country'] = customer_data.country
+                    self.initial['order_city'] = customer_data.city
+                    self.initial['order_zip_code'] = customer_data.zip_code
+                    self.initial['order_address1'] = customer_data.address1
+                    self.initial['order_address2'] = customer_data.address2
+                    self.initial['order_information'] = customer_data.information
+
 
 class BasketCommentsForm(forms.ModelForm):
     class Meta:

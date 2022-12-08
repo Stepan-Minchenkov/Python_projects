@@ -1,9 +1,8 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from django.views.generic import ListView, DetailView, UpdateView, TemplateView
-from . import models, forms
+from . import forms
 from django.contrib.auth.models import Group
 from bookstore.models import Customer, Book
 from django.db.models import Q
@@ -14,6 +13,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import Http404
 from django.core.exceptions import PermissionDenied
+from django.conf import settings
 
 User = get_user_model()
 
@@ -32,6 +32,10 @@ class Homepage(TemplateView):
         context['object_list'] = top_books
         return context
 
+
+# def url(request):
+#     return HttpResponseRedirect(settings.NBRBBY)
+#
 
 class Registration(FormView):
     model = User
@@ -73,37 +77,42 @@ class RegistrationFill(FormView):
 class ProfileList(ListView):
     model = Customer
     template_name = 'accounts/profile_list.html'
+    paginate_by = 10
 
     def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+        object_list = None
         current_user = User.objects.filter(username=self.request.user)
         if current_user:
             current_user = User.objects.get(username=self.request.user)
-            context['object_list'] = \
-                Customer.objects.filter(Q(user_data__in=
-                                          User.objects.filter(Q(groups__name="Customers") &
-                                                              ~Q(username=current_user))
-                                          ))
+            object_list = \
+                Customer.objects.filter(
+                    Q(user_data__in=User.objects.filter(
+                        Q(groups__name="Customers") &
+                        ~Q(username=current_user))
+                      ))
+        context = super().get_context_data(*args, object_list=object_list, **kwargs)
         return context
 
 
 class ProfileListCustomers(ListView):
     model = Customer
     template_name = 'accounts/profile_list_customers.html'
+    paginate_by = 10
 
     def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['object_list'] = User.objects.filter(Q(groups__name="Customers"))
+        object_list = User.objects.filter(Q(groups__name="Customers"))
+        context = super().get_context_data(*args, object_list=object_list, **kwargs)
         return context
 
 
 class ProfileListManagers(ListView):
     model = Customer
     template_name = 'accounts/profile_list_managers.html'
+    paginate_by = 10
 
     def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
-        context['object_list'] = User.objects.filter(Q(groups__name="Managers"))
+        object_list = User.objects.filter(Q(groups__name="Managers"))
+        context = super().get_context_data(*args, object_list=object_list, **kwargs)
         return context
 
 
@@ -151,27 +160,27 @@ class ProfileEdit(PermissionRequiredMixin, UpdateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        user = User.objects.get(username=self.request.user)
-        customer, created = Customer.objects.get_or_create(
-            user_data=user,
-            defaults={
-                'phone': '',
-                'country': '',
-                'city': '',
-                'zip_code': '',
-                'address1': '',
-                'address2': ''
-            }
-        )
-        object_temp = context.get('object')
-        del context['form']
-        # context['form'] = forms.ChangeProfileForm(data={
-        #     'email': object_temp.email,
-        #     'first_name': object_temp.first_name,
-        #     'last_name': object_temp.last_name,
-        #     'phone': customer.phone,
-        # })
-        context['form'] = forms.ChangeProfileForm(instance=object_temp)
+        # user = User.objects.get(username=self.request.user)
+        # customer, created = Customer.objects.get_or_create(
+        #     user_data=user,
+        #     defaults={
+        #         'phone': '',
+        #         'country': '',
+        #         'city': '',
+        #         'zip_code': '',
+        #         'address1': '',
+        #         'address2': ''
+        #     }
+        # )
+        # object_temp = context.get('object')
+        # del context['form']
+        # # context['form'] = forms.ChangeProfileForm(data={
+        # #     'email': object_temp.email,
+        # #     'first_name': object_temp.first_name,
+        # #     'last_name': object_temp.last_name,
+        # #     'phone': customer.phone,
+        # # })
+        # context['form'] = forms.ChangeProfileForm(instance=object_temp)
         return context
 
     def form_valid(self, form):

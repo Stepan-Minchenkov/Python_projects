@@ -1,7 +1,4 @@
 from django.urls import path
-
-from django.contrib.auth import views as auth_views
-from django.urls import reverse_lazy
 from . import views as bookstore_views
 
 app_name = 'bookstore'
@@ -12,7 +9,7 @@ urlpatterns = [
     path('books-delete/<int:pk>', bookstore_views.DeleteBook.as_view(), name='book-delete'),
     path('books-update/<int:pk>', bookstore_views.UpdateBook.as_view(), name='book-update'),
 
-    path('goodsinbasket/', bookstore_views.ShowGoodsInBasket.as_view(), name='goodsinbasket-show'),
+    # path('goodsinbasket/', bookstore_views.ShowGoodsInBasket.as_view(), name='goodsinbasket-show'),
     path('goodsinbasket-create/', bookstore_views.CreateGoodsInBasket.as_view(), name='goodsinbasket-create'),
     path('goodsinbasket-delete/<int:pk>', bookstore_views.DeleteGoodsInBasket.as_view(), name='goodsinbasket-delete'),
     path('goodsinbasket-update/<int:pk>', bookstore_views.UpdateGoodsInBasket.as_view(), name='goodsinbasket-update'),

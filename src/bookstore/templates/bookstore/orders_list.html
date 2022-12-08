@@ -24,7 +24,7 @@
             </tr>
             </thead>
             <tbody>
-                {% for element in basket %}
+                {% for element in page_obj %}
                 <tr>
                     {% if perms.auth.manager  or  perms.auth.admin %}
                     <td>{{ element.customer.username }}</td>
@@ -58,6 +58,23 @@
             </tbody>
         </table>
     </div>
-    <a href="{{request.META.HTTP_REFERER}}" class="btn btn-secondary">Go back</a>
+    Total number: {{ page_obj.paginator.count }}
+    <div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+    </div>
     <a href="{% url 'homepage' %}" class="btn btn-secondary">{% trans "Home" %}</a><br>
 {% endblock body %}

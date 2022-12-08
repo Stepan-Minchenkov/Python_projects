@@ -3,6 +3,7 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
 from . import views as user_views
+from django.conf import settings
 
 app_name = 'accounts'
 urlpatterns = [
@@ -39,4 +40,5 @@ urlpatterns = [
     path('profile/list', user_views.ProfileList.as_view(), name='profile_list'),
     path('profile/list/customers', user_views.ProfileListCustomers.as_view(), name='profile_list_customers'),
     path('profile/list/managers', user_views.ProfileListManagers.as_view(), name='profile_list_managers'),
+    # path('', user_views.url, name='currency-link'),
 ]
