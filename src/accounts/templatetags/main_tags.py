@@ -4,6 +4,7 @@ import requests
 import re
 from django.conf import settings
 from bookstore import models
+from django.urls import reverse_lazy
 # from django.contrib.sessions.models import Session
 # from django.contrib.sessions.backends.db import SessionStore
 import time
@@ -51,6 +52,19 @@ def in_cart(context):
     return mark_safe(cart)
 
 
-@register.simple_tag(takes_context=True)
-def currency_url(context):
+@register.simple_tag()
+def currency_url():
     return mark_safe(settings.NBRBBY)
+
+
+@register.simple_tag(takes_context=True)
+def in_cart_url(context):
+    url = ''
+    request = context.get('request', 0)
+    if not request:
+        return mark_safe(url)
+
+    basket_id = int(request.session.get('basket_pk', 0))
+    if basket_id:
+        url = reverse_lazy('bookstore:orders-complete', kwargs={'pk': basket_id})
+    return mark_safe(url)

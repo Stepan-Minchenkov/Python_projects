@@ -61,6 +61,7 @@
                     {% endfor %}
                     </tbody>
                 </table>
+                Total number: {{ page_obj.paginator.count }}
                 <div class="pagination">
                 <span class="step-links">
                     {% if page_obj.has_previous %}
