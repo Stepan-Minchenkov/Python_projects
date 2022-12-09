@@ -1,11 +1,2 @@
-{% extends "base_conf.html" %}
-{% load i18n %}
-{% block title %}
-{% trans "New order" %}
-{% endblock title %}
-
-{% block body %}
-        {% trans "Customer has created new order:" %}{{ order_pk }}{% trans ". Follow the link below:" %}
+"Customer has created new order:"{{ order_pk }}. Follow the link below:
 {{ protocol}}://{{ domain }}{% url 'bookstore:orders-detail' pk=order_pk %}
-
-{% endblock body %}
