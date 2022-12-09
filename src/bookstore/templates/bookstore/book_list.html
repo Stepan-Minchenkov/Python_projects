@@ -21,6 +21,9 @@
                     {% endif %}
                         <th> {% trans "Cover" %} </th>
                         <th> {% trans "Name" %} </th>
+                        <th> {% trans "Rate" %} </th>
+                        <th> {% trans "Price" %} </th>
+                        <th> {% trans "In stock" %} </th>
                         <th>  </th>
                     {% if perms.bookstore.delete_book %}
                         <th>  </th>
@@ -44,6 +47,9 @@
                         <td><a class="nav-link active" style="text-decoration: underline"
                                href="{% url 'bookstore:book-detail' pk=element.pk %}">
                             {{ element.name }} </a></td>
+                        <td>{{ element.rate }} </td>
+                        <td>{{ element.price }} </td>
+                        <td>{{ element.available }} </td>
                         <td><form action="{% url 'bookstore:goodsinbasket-create' %}" method="post">
                             {% csrf_token %}
                             <input type="number" name="quantity" value="1" step="1" min="1" maxlength="4"

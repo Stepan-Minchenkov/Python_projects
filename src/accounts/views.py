@@ -4,7 +4,7 @@ from django.views.generic.edit import FormView
 from django.views.generic import ListView, DetailView, UpdateView, TemplateView
 from . import forms
 from django.contrib.auth.models import Group
-from bookstore.models import Customer, Book
+from bookstore.models import Customer, Book, Basket, GoodsInBasket
 from django.db.models import Q
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
@@ -24,12 +24,26 @@ class Homepage(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        top_books = Book.objects.all().order_by('-updated')[:10]
-        # top_books = Book.objects.values_list('name', 'price')
-        # top_books = Book.objects.filter(
+        new_books = Book.objects.all().order_by('-updated')[:10]
+        # new_books = Book.objects.values_list('name', 'price')
+        # new_books = Book.objects.filter(
         #     Q(authors__in=Author.objects.filter(Q(name='Agatha') | Q(name='Эдит')))
         # )
-        context['object_list'] = top_books
+        goodsinbasket = GoodsInBasket.objects.filter(
+            Q(order__in=Basket.objects.filter(order_status='done'))).values('article_id', 'quantity')
+        booklist = {}
+        for goods in goodsinbasket:
+            if goods['article_id'] in booklist:
+                booklist[goods['article_id']] += goods['quantity']
+            else:
+                booklist[goods['article_id']] = goods['quantity']
+        top_books_list = sorted(booklist, key=booklist.get, reverse=True)[:5]
+        top_books = Book.objects.filter(pk__in=top_books_list)
+
+        popular_books = Book.objects.all().order_by('-rate')[:7]
+        context['object_list'] = new_books
+        context['popular_books'] = popular_books
+        context['top_books'] = top_books
         return context
 
 

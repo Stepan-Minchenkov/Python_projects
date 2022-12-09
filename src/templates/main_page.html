@@ -1,6 +1,7 @@
 {% extends "base_conf.html" %}
+{% load i18n %}
 {% block title %}
-Main page
+{% trans "Main page" %}
 {% endblock title %}
 
 {% block body %}
@@ -11,6 +12,7 @@ Main page
       user = Fourth, Password =fourth1234  [group Managers]<br>
     {% csrf_token %}
     <div class="container">
+        <br><h3>{% trans "New arrivals" %}</h3>
         <div class="row">
             {% for element in object_list %}
                 <div class="card" style="width: 14rem;">
@@ -24,6 +26,58 @@ Main page
                     <p class="card-text">{{ element.authors }}</p>
                     <a href="{% url 'bookstore:book-detail' pk=element.pk %}" class="btn btn-primary">See more about it</a>
                   </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="container">
+        <br><h3>{% trans "Popular" %}</h3>
+        <div class="row">
+            {% for element in popular_books %}
+                <div class="card" style="width: 16rem;">
+                <table>
+                <tr><td>
+                  {% if element.photo %}
+                    <img src="{{ element.photo.url }}" class="card-img-top" alt="...">
+                  {% else %}
+                    <img src="" class="card-img-top" alt="...">
+                  {% endif%}
+                  </td>
+                  <td>
+                  <div class="card-body">
+                      <p class="card-text">{{ element.name }}</p>
+                    <a href="{% url 'bookstore:book-detail' pk=element.pk %}" class="btn btn-primary">
+                        <i class="bi bi-arrow-right-square-fill"></i></a>
+                  </div>
+                  <td>
+                </tr>
+                </table>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="container">
+        <br><h3>{% trans "Most often bought" %}</h3>
+        <div class="row">
+            {% for element in top_books %}
+                <div class="card" style="width: 16rem;">
+                <table>
+                <tr><td>
+                  {% if element.photo %}
+                    <img src="{{ element.photo.url }}" class="card-img-top" alt="..." >
+                  {% else %}
+                    <img src="" class="card-img-top" alt="...">
+                  {% endif%}
+                  </td>
+                  <td>
+                  <div class="card-body">
+                      <p class="card-text">{{ element.name }}</p>
+                    <a href="{% url 'bookstore:book-detail' pk=element.pk %}" class="btn btn-primary">
+                        <i class="bi bi-arrow-right-square-fill"></i></a>
+                  </div>
+                  <td>
+                </tr>
+                </table>
                 </div>
             {% endfor %}
         </div>

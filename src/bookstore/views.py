@@ -99,10 +99,10 @@ class ShowBasket(generic.ListView):
         if self.request.user.is_authenticated:
             if self.request.user.has_perm("auth.manager") or \
                     self.request.user.has_perm("auth.admin"):
-                basket = models.Basket.objects.all().order_by("order_status", "-created")
+                basket = models.Basket.objects.all().order_by("order_status", "-pk")
             elif self.request.user.has_perm("auth.registered_customer"):
                 customer = self.request.user
-                basket = models.Basket.objects.filter(customer=customer).order_by("order_status", "-created")
+                basket = models.Basket.objects.filter(customer=customer).order_by("order_status", "-pk")
         return basket
 
 
