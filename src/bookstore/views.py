@@ -6,13 +6,15 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from . import models, forms
 from django.db.models import Q
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError, NON_FIELD_ERRORS
 from reference.models import Author, Serie, Publisher, Genre
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import get_user_model
 from django.core.paginator import Paginator
+from django.utils.translation import gettext_lazy as _
+from django.forms.utils import ErrorList
 
 User = get_user_model()
 
@@ -116,8 +118,9 @@ class ReadBasket(generic.DetailView):
         return context
 
 
-class UpdateBasket(generic.UpdateView):
+class UpdateBasket(PermissionRequiredMixin, generic.UpdateView):
     #   http://127.0.0.1:8000/bookstore/orders-update/7
+    permission_required = 'bookstore.change_basket'
     model = models.Basket
     form_class = forms.BasketForm
     template_name = 'bookstore/orders_update.html'
@@ -166,15 +169,28 @@ class UpdateBasket(generic.UpdateView):
                 for goods in goods_in_basket:
                     book = models.Book.objects.get(pk=goods.article.pk)
                     book.available -= goods.quantity
+                    if book.available < 0:
+                        message = f"Request has more book '{book.name}' than there are available. Please decrease."
+                        form._errors[NON_FIELD_ERRORS] = ErrorList([
+                            message
+                        ])
+                        return self.form_invalid(form)
+                        # raise ValidationError(
+                        #     _("Request has more book '%(value)s' than there are available. Please decrease."),
+                        #     code='invalid',
+                        #     params={'value': book.name},
+                        # )
+                        # form.add_error(NON_FIELD_ERRORS, message)
                     book.save()
 
-            if basket.order_status == "in_process" and \
-                    form.instance.order_status == "created":
-                goods_in_basket = models.GoodsInBasket.objects.filter(order=form.instance.pk)
-                for goods in goods_in_basket:
-                    book = models.Book.objects.get(pk=goods.article.pk)
-                    book.available += goods.quantity
-                    book.save()
+            if basket.order_status == "in_process":
+                if form.instance.order_status == "cancelled" or \
+                   form.instance.order_status == "created":
+                    goods_in_basket = models.GoodsInBasket.objects.filter(order=form.instance.pk)
+                    for goods in goods_in_basket:
+                        book = models.Book.objects.get(pk=goods.article.pk)
+                        book.available += goods.quantity
+                        book.save()
         return super().form_valid(form)
 
 
@@ -381,25 +397,15 @@ class BasketComplete(generic.UpdateView):
         """
         Send a django.core.mail.EmailMultiAlternatives to `to_email`.
         """
-        # print("11")
-        # print(context)
         subject = loader.render_to_string(subject_template_name, context, request)
         # Email subject *must not* contain newlines
         subject = "".join(subject.splitlines())
-        # print("22")
-        # print(context)
         body = loader.render_to_string(email_template_name, context, request)  ##  why tag is called here????
-        # print("33")
-        # print(context)
         email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
         if html_email_template_name is not None:
             html_email = loader.render_to_string(html_email_template_name, context)
             email_message.attach_alternative(html_email, "text/html")
-        # print("44")
-        # print(context)
         email_message.send()
-        # print("55")
-        # print(context)
 
     def form_valid(self, form):
         form.instance.order_status = 'created'
