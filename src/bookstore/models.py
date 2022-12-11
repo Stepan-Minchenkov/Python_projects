@@ -8,7 +8,8 @@ STATUSES = [
     ('created', 'Created'),
     ('in_process', 'In Process'),
     ('done', 'Processed and delivered'),
-    ('not_submitted', 'In doubt')
+    ('not_submitted', 'In doubt'),
+    ('cancelled', 'Cancelled')
 ]
 
 RATE = [(0, '0'), (1, '1'), (2, '2'), (3, '3'), (4, '4'),
@@ -48,9 +49,11 @@ class Book(models.Model):
         all_comments = self.bookcomments.all()
         # print(all_comments)
         rate = 0
-        for comment in all_comments:
-            rate += comment.rate
-        averagerate = rate/(len(all_comments))
+        averagerate = 0
+        if len(all_comments):
+            for comment in all_comments:
+                rate += comment.rate
+            averagerate = rate/(len(all_comments))
         self.rate = averagerate
         self.save()
         return averagerate
